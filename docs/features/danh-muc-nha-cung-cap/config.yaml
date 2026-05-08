@@ -1,0 +1,116 @@
+role: web
+feature: danh-muc-nha-cung-cap
+folder: suppliers
+name_vi: Danh mục nhà cung cấp
+name_en: Supplier Management
+output_type: markdown
+language: vi
+
+workflow_mode: full
+documentation_level: standard
+
+project:
+  backend: accounting_api
+  frontend: accounting_web
+
+input:
+  current_ui_images: docs/features/danh-muc-nha-cung-cap/images
+  reference_ui_images: docs/features/danh-muc-nha-cung-cap/references/images
+  reference_markdown: docs/features/danh-muc-nha-cung-cap/references/markdown
+  actual_ui_images: docs/features/danh-muc-nha-cung-cap/actual
+
+cost_optimization:
+  enabled: true
+  max_output: concise
+  avoid_repeating_previous_docs: true
+  summarize_existing_content: true
+  only_expand_when_requested: true
+  max_table_rows: 20
+  max_doc_lines: 250
+
+visual_review:
+  enabled: true
+  level: strict
+  require_actual_screenshot: true
+  block_on_critical: true
+  block_on_high: true
+
+frontend:
+  feature_dir: accounting_web/src/features/suppliers
+  route_path: /categories/suppliers
+  table_library: AG Grid
+  mock_first: true
+
+backend:
+  api_base_path: /api/v1
+  tenant_strategy: jwt_claim_or_header
+  tenant_header: X-Tenant-Id
+  standard_response: true
+  soft_delete: true
+  audit_fields: true
+
+entities:
+  - Supplier
+
+permissions:
+  - supplier.view
+  - supplier.create
+  - supplier.update
+  - supplier.delete
+  - supplier.bulkDelete
+  - supplier.export
+  - supplier.updateAddress
+  - supplier.pay
+  - supplier.createPurchaseVoucher
+
+capabilities:
+  - supplier-list
+  - supplier-search
+  - supplier-filter
+  - supplier-sort
+  - supplier-pagination
+  - supplier-create
+  - supplier-update
+  - supplier-delete
+  - supplier-bulk-delete
+  - supplier-export
+  - supplier-update-address
+  - supplier-summary
+  - supplier-pay
+  - supplier-purchase-voucher
+
+business_rules:
+  - supplier-code-unique-per-tenant
+  - soft-delete
+  - cannot-delete-with-transactions
+  - tenant-isolation
+  - negative-debt-display
+
+api:
+  base_path: /api/v1
+  resource: suppliers
+
+list_query:
+  page_index_base: 1
+  default_page_size: 100
+  max_page_size: 500
+  searchable_fields:
+    - supplierCode
+    - supplierName
+    - taxCode
+    - phone
+    - email
+    - address
+  sortable_fields:
+    - supplierCode
+    - supplierName
+    - currentDebtAmount
+    - updatedAt
+    - createdAt
+
+commands:
+  frontend_dev: npm run dev
+  frontend_build: npm run build
+  frontend_test: npm run test
+  backend_build: dotnet build
+  backend_test: dotnet test

@@ -1,0 +1,1411 @@
+# ============================================================
+# FEATURE CONFIG TEMPLATE
+# File path:
+# docs/features/{feature-folder}/config.yaml
+#
+# Ví dụ:
+# docs/features/suppliers/config.yaml
+#
+# Mục đích:
+# - Đây là file điều phối chính cho AI workflow.
+# - Khi bạn chạy:
+#   /fullstack-feature-workflow danh-muc-nha-cung-cap
+#   AI sẽ tìm file config.yaml có field:
+#   feature: danh-muc-nha-cung-cap
+# - Sau đó AI dùng file này để biết:
+#   + feature nằm ở folder nào
+#   + tên nghiệp vụ là gì
+#   + backend/frontend nằm ở đâu
+#   + input ảnh/tài liệu nằm ở đâu
+#   + workflow chạy mode nào
+#   + phase nào cần chạy hoặc bỏ qua
+#   + có cần pixel-perfect visual review không
+#   + mức độ tài liệu chi tiết tới đâu
+#   + permission/entity/API/test liên quan
+# ============================================================
+
+
+# ============================================================
+# 1. THÔNG TIN CƠ BẢN CỦA FEATURE
+# ============================================================
+
+# role:
+# Xác định loại feature.
+#
+# Giá trị gợi ý:
+# - web        : feature có giao diện web/frontend
+# - api        : feature chỉ có backend API
+# - fullstack  : feature gồm cả frontend + backend
+#
+# Với màn "Danh mục nhà cung cấp", nên dùng:
+# role: fullstack
+role: fullstack
+
+
+# feature:
+# Mã định danh feature.
+#
+# Đây là giá trị bạn dùng khi chạy command:
+# /fullstack-feature-workflow danh-muc-nha-cung-cap
+#
+# AI sẽ match command với field này.
+feature: danh-muc-nha-cung-cap
+
+
+# folder:
+# Tên folder vật lý chứa tài liệu feature trong docs/features/.
+#
+# Ví dụ:
+# docs/features/suppliers/
+#
+# Nếu không có field này, AI có thể suy luận từ folder chứa config.yaml.
+folder: suppliers
+
+
+# name_vi:
+# Tên tiếng Việt của nghiệp vụ.
+#
+# AI dùng tên này để đặt tiêu đề tài liệu:
+# Frontend Basic Design: Danh mục nhà cung cấp
+# Backend Basic Design: Danh mục nhà cung cấp
+name_vi: Danh mục nhà cung cấp
+
+
+# name_en:
+# Tên tiếng Anh của feature.
+#
+# Không bắt buộc, nhưng nên có để AI đặt tên entity, module,
+# class, folder, component rõ hơn.
+name_en: Supplier Management
+
+
+# description:
+# Mô tả ngắn về feature.
+#
+# AI dùng để hiểu mục đích nghiệp vụ tổng quan.
+description: Quản lý danh sách nhà cung cấp, bao gồm xem danh sách, tìm kiếm, lọc, thêm, sửa, xóa, xuất Excel, cập nhật địa chỉ và xem tổng quan công nợ.
+
+
+# output_type:
+# Kiểu output tài liệu AI cần tạo.
+#
+# Giá trị thường dùng:
+# - markdown
+#
+# Nên dùng markdown để dễ review, commit git, chỉnh sửa.
+output_type: markdown
+
+
+# language:
+# Ngôn ngữ chính của tài liệu AI tạo.
+#
+# Giá trị:
+# - vi
+# - en
+#
+# Với dự án của bạn nên để vi.
+language: vi
+
+
+# ============================================================
+# 2. CẤU TRÚC PROJECT
+# ============================================================
+
+project:
+  # backend:
+  # Folder backend trong project root.
+  #
+  # Quy tắc:
+  # - AI chỉ được tạo/sửa backend code trong folder này.
+  backend: accounting_api
+
+  # frontend:
+  # Folder frontend trong project root.
+  #
+  # Quy tắc:
+  # - AI chỉ được tạo/sửa frontend code trong folder này.
+  frontend: accounting_web
+
+  # docs:
+  # Folder tài liệu feature.
+  docs: docs/features/suppliers
+
+  # ai_skills:
+  # Folder chứa AI skills.
+  ai_skills: .ai/skills
+
+  # ai_templates:
+  # Folder chứa template dùng lại.
+  ai_templates: .ai/templates
+
+
+# ============================================================
+# 3. INPUT FOLDERS
+# ============================================================
+
+input:
+  # current_ui_images:
+  # Folder chứa ảnh UI hiện tại cần implement.
+  #
+  # Ví dụ:
+  # - ảnh màn danh sách nhà cung cấp hiện tại
+  # - ảnh form thêm/sửa nhà cung cấp
+  # - ảnh màn xem chi tiết nhà cung cấp
+  #
+  # AI dùng làm nguồn chính để phân tích UI.
+  current_ui_images: docs/features/suppliers/images
+
+  # reference_ui_images:
+  # Folder chứa ảnh UI tham khảo từ phần mềm khác.
+  #
+  # Ví dụ:
+  # - MISA
+  # - KiotViet
+  # - phần mềm kế toán khác
+  #
+  # AI chỉ dùng làm tham khảo UX, không tự động copy 100%.
+  reference_ui_images: docs/features/suppliers/references/images
+
+  # reference_markdown:
+  # Folder chứa tài liệu hướng dẫn sử dụng / nghiệp vụ tham khảo.
+  #
+  # Ví dụ:
+  # - hướng dẫn của MISA
+  # - tài liệu BA
+  # - mô tả nghiệp vụ
+  # - rule validation
+  #
+  # AI dùng để hiểu business rule.
+  reference_markdown: docs/features/suppliers/references/markdown
+
+  # actual_ui_images:
+  # Folder chứa ảnh thực tế sau khi frontend đã code và chạy app.
+  #
+  # Sau Phase 8 Frontend Coding, bạn chạy app rồi chụp ảnh màn hình thực tế
+  # lưu vào folder này để Phase 9 Frontend Visual Review so sánh.
+  actual_ui_images: docs/features/suppliers/actual
+
+  # api_docs:
+  # Optional.
+  # Folder chứa tài liệu API nếu bạn đã có sẵn.
+  #
+  # Nếu chưa có, có thể để trống hoặc bỏ field này.
+  api_docs: docs/features/suppliers/references/api
+
+  # existing_docs:
+  # Optional.
+  # Folder chứa tài liệu cũ nếu feature này đã từng được phân tích.
+  existing_docs: docs/features/suppliers/legacy
+
+
+# ============================================================
+# 4. WORKFLOW MODE
+# ============================================================
+
+# workflow_mode:
+# Quyết định AI sẽ chạy workflow nào.
+#
+# Giá trị:
+#
+# full:
+#   Dùng cho feature đầy đủ frontend + backend + test + integration.
+#
+# frontend_only:
+#   Chỉ làm frontend, dùng khi API/backend đã có.
+#
+# backend_only:
+#   Chỉ làm backend API, không làm UI.
+#
+# ui_only:
+#   Chỉ dựng UI bằng mock data, không làm backend.
+#
+# bugfix:
+#   Sửa lỗi cụ thể, không chạy 13 phase đầy đủ.
+#
+# quick_change:
+#   Thay đổi nhỏ, ví dụ thêm button, sửa label, thêm cột.
+#
+# Với "Danh mục nhà cung cấp", nên dùng full.
+workflow_mode: full
+
+
+# documentation_level:
+# Mức độ chi tiết của tài liệu.
+#
+# compact:
+#   Ít token, tài liệu ngắn, phù hợp thay đổi nhỏ.
+#
+# standard:
+#   Cân bằng giữa chi tiết và chi phí.
+#
+# detailed:
+#   Rất chi tiết, phù hợp nghiệp vụ lớn/phức tạp.
+#
+# Khuyến nghị:
+# - Feature lớn: standard hoặc detailed
+# - Feature nhỏ: compact
+documentation_level: standard
+
+
+# ============================================================
+# 5. WORKFLOW PHASES
+# ============================================================
+
+workflow:
+  # phases:
+  # Danh sách phase chuẩn mà AI sẽ chạy.
+  #
+  # Với workflow mới đã tối ưu:
+  # 1. Frontend Basic Design
+  # 2. Frontend UI Pixel Analysis
+  # 3. Backend Basic Design
+  # 4. Backend API Contract Review
+  # 5. Frontend Implementation Plan
+  # 6. Backend Implementation Plan
+  # 7. Backend Coding
+  # 8. Frontend Coding
+  # 9. Frontend Visual Review
+  # 10. Backend Test
+  # 11. Frontend Test
+  # 12. Integration Test
+  # 13. Final Feature Review
+  phases:
+    - frontend-basic-design
+    - frontend-ui-pixel-analysis
+    - backend-basic-design
+    - backend-api-contract-review
+    - frontend-implementation-plan
+    - backend-implementation-plan
+    - backend-coding
+    - frontend-coding
+    - frontend-visual-review
+    - backend-test
+    - frontend-test
+    - integration-test
+    - final-feature-review
+
+  # run_one_phase_at_a_time:
+  # true = mỗi lần chạy command chỉ thực hiện 1 phase rồi dừng để review.
+  #
+  # Khuyến nghị luôn true để kiểm soát chất lượng.
+  run_one_phase_at_a_time: true
+
+  # require_review_after_each_phase:
+  # true = sau mỗi phase AI phải dừng lại chờ bạn approve.
+  #
+  # Bạn approve bằng:
+  # approve phase 1
+  # duyệt phase 1
+  # ok phase 1
+  require_review_after_each_phase: true
+
+  # skip_irrelevant_phases:
+  # true = nếu workflow_mode là frontend_only/backend_only/ui_only,
+  # AI được phép skip phase không liên quan.
+  skip_irrelevant_phases: true
+
+  # stop_on_blocking_issues:
+  # true = nếu còn issue blocking trong issues.md thì không chạy phase tiếp.
+  stop_on_blocking_issues: true
+
+  # stop_on_visual_critical_high:
+  # true = nếu Phase 9 có visual issue Critical/High thì không cho qua phase tiếp.
+  stop_on_visual_critical_high: true
+
+
+# ============================================================
+# 6. COST OPTIMIZATION
+# ============================================================
+
+cost_optimization:
+  # enabled:
+  # Bật/tắt tối ưu chi phí token.
+  #
+  # Nên bật khi dùng Claude/Cursor.
+  enabled: true
+
+  # max_output:
+  # Mức độ ngắn gọn trong câu trả lời chat.
+  #
+  # concise:
+  #   Chat response ngắn, nội dung chi tiết ghi vào file.
+  #
+  # normal:
+  #   Trả lời vừa phải.
+  #
+  # verbose:
+  #   Trả lời rất chi tiết.
+  max_output: concise
+
+  # avoid_repeating_previous_docs:
+  # true = phase sau không copy lại toàn bộ nội dung phase trước.
+  #
+  # Ví dụ:
+  # Frontend Implementation Plan không cần copy lại toàn bộ API Contract,
+  # chỉ reference:
+  # docs/features/suppliers/04-api-contract-review.md
+  avoid_repeating_previous_docs: true
+
+  # summarize_existing_content:
+  # true = khi cần nhắc lại nội dung file cũ, AI chỉ tóm tắt.
+  summarize_existing_content: true
+
+  # only_expand_when_requested:
+  # true = AI chỉ viết chi tiết khi bạn yêu cầu.
+  #
+  # Ví dụ:
+  # "hãy expand phần API contract"
+  only_expand_when_requested: true
+
+  # max_table_rows:
+  # Giới hạn số dòng bảng để tránh tài liệu quá dài.
+  #
+  # Nếu vượt quá, AI nên tóm tắt và nói:
+  # "Chi tiết đầy đủ nằm trong source/reference".
+  max_table_rows: 20
+
+  # max_doc_lines:
+  # Giới hạn số dòng mỗi tài liệu phase.
+  #
+  # compact nên khoảng 120
+  # standard nên khoảng 250
+  # detailed có thể 500+
+  max_doc_lines: 250
+
+  # compact_final_response:
+  # true = sau mỗi phase, chat chỉ trả summary ngắn.
+  compact_final_response: true
+
+  # delta_update:
+  # true = khi sửa file đã có, AI chỉ sửa phần liên quan, không rewrite toàn bộ nếu không cần.
+  delta_update: true
+
+
+# ============================================================
+# 7. VISUAL REVIEW
+# ============================================================
+
+visual_review:
+  # enabled:
+  # Bật/tắt quy trình visual review.
+  #
+  # true:
+  #   Chạy UI Pixel Analysis và Frontend Visual Review.
+  #
+  # false:
+  #   Bỏ qua các phase liên quan đến pixel-perfect UI.
+  enabled: true
+
+  # level:
+  # Mức độ visual review.
+  #
+  # off:
+  #   Không review UI.
+  #
+  # light:
+  #   Chỉ kiểm tra layout lớn, màu chính, toolbar, table, pagination.
+  #
+  # strict:
+  #   Kiểm tra kỹ spacing, typography, color, row height, column width.
+  #
+  # Với màn cần giống ảnh, dùng strict.
+  level: strict
+
+  # source_priority:
+  # Thứ tự ưu tiên nguồn visual.
+  #
+  # current_ui_images:
+  #   Ảnh UI hiện tại là source chính.
+  #
+  # reference_ui_images:
+  #   Ảnh tham khảo chỉ dùng bổ sung UX.
+  #
+  # reference_markdown:
+  #   Markdown dùng cho nghiệp vụ, không phải pixel style.
+  source_priority:
+    - current_ui_images
+    - reference_ui_images
+    - reference_markdown
+
+  # require_actual_screenshot:
+  # true = Phase 9 bắt buộc có ảnh chụp thực tế sau khi chạy app.
+  #
+  # Nếu chưa có ảnh trong docs/features/suppliers/actual
+  # hoặc chưa upload ảnh vào chat, Phase 9 sẽ Blocked.
+  require_actual_screenshot: true
+
+  # block_on_critical:
+  # true = nếu có visual issue Critical thì không approve Phase 9.
+  block_on_critical: true
+
+  # block_on_high:
+  # true = nếu có visual issue High thì không approve Phase 9.
+  block_on_high: true
+
+  # allow_approve_with_medium:
+  # true = có thể approve Phase 9 nếu chỉ còn Medium issues,
+  # nhưng phải ghi vào deferred items.
+  allow_approve_with_medium: true
+
+  # allow_approve_with_low:
+  # true = có thể approve Phase 9 nếu chỉ còn Low issues.
+  allow_approve_with_low: true
+
+  # actual_screenshot_required_after_phase:
+  # Sau phase nào thì user cần chạy app và chụp ảnh.
+  #
+  # Với workflow này là sau Phase 8 Frontend Coding.
+  actual_screenshot_required_after_phase: 8
+
+
+# ============================================================
+# 8. PHASE POLICY
+# ============================================================
+
+phase_policy:
+  # run_one_phase_at_a_time:
+  # Mỗi lần chạy /fullstack-feature-workflow chỉ chạy 1 phase.
+  run_one_phase_at_a_time: true
+
+  # require_review_after_each_phase:
+  # Sau mỗi phase phải dừng lại để user review.
+  require_review_after_each_phase: true
+
+  # require_approval_before_next_phase:
+  # Phase sau chỉ chạy khi phase trước đã Approved trong workflow-status.md.
+  require_approval_before_next_phase: true
+
+  # require_explicit_coding_confirmation:
+  # Trước khi code backend/frontend, AI phải yêu cầu xác nhận.
+  #
+  # Backend:
+  # confirm backend coding
+  #
+  # Frontend:
+  # confirm frontend coding
+  require_explicit_coding_confirmation: true
+
+  # allow_approve_with_deferred_non_blocking_items:
+  # true = có thể approve nếu chỉ còn non-blocking issues.
+  allow_approve_with_deferred_non_blocking_items: true
+
+  # block_if_open_blocking_issues:
+  # true = còn blocking issue thì không được chạy phase tiếp.
+  block_if_open_blocking_issues: true
+
+  # block_if_visual_critical_high:
+  # true = còn visual issue Critical/High thì không qua phase test/integration.
+  block_if_visual_critical_high: true
+
+
+# ============================================================
+# 9. FRONTEND CONFIG
+# ============================================================
+
+frontend:
+  # stack:
+  # Tech stack frontend của project.
+  stack:
+    - React
+    - TypeScript
+    - Vite
+    - TailwindCSS
+    - AG Grid
+    - React Query
+    - Axios
+    - React Router
+
+  # folder:
+  # Folder frontend trong root project.
+  folder: accounting_web
+
+  # source_dir:
+  # Folder source code frontend.
+  source_dir: accounting_web/src
+
+  # feature_dir:
+  # Folder dự kiến cho feature frontend.
+  #
+  # AI có thể điều chỉnh theo cấu trúc thực tế nếu project khác.
+  feature_dir: accounting_web/src/features/suppliers
+
+  # route_path:
+  # Route frontend của màn hình.
+  #
+  # AI dùng trong Frontend Implementation Plan và route config.
+  route_path: /categories/suppliers
+
+  # table_library:
+  # Thư viện bảng/grid.
+  #
+  # Giá trị:
+  # - AG Grid
+  # - TanStack Table
+  table_library: AG Grid
+
+  # form_library:
+  # Thư viện form nếu có màn thêm/sửa.
+  form_library: React Hook Form
+
+  # validation_library:
+  # Thư viện validation frontend nếu dùng.
+  validation_library: Zod
+
+  # api_client:
+  # API client đang dùng.
+  api_client: Axios
+
+  # data_fetching:
+  # Data fetching/cache library.
+  data_fetching: React Query
+
+  # styling:
+  # Cách styling.
+  styling: TailwindCSS
+
+  # design_token_strategy:
+  # Cách quản lý design token.
+  #
+  # feature:
+  #   token riêng trong feature.
+  #
+  # global:
+  #   token dùng chung toàn app.
+  design_token_strategy: feature
+
+  # mock_first:
+  # true = frontend có thể dùng mock data trước khi API chạy thật,
+  # nhưng types/API service vẫn phải bám API Contract.
+  mock_first: true
+
+  # tenant_query_key_required:
+  # true = React Query key phải chứa tenantId.
+  tenant_query_key_required: true
+
+  # permission_ui_required:
+  # true = UI phải ẩn/disable button/action theo permission.
+  permission_ui_required: true
+
+
+# ============================================================
+# 10. BACKEND CONFIG
+# ============================================================
+
+backend:
+  # stack:
+  # Tech stack backend của project.
+  stack:
+    - .NET 9
+    - ASP.NET Core Web API
+    - Entity Framework Core
+    - SQL Server
+    - Clean Architecture
+    - JWT
+    - FluentValidation
+    - Swagger
+    - xUnit
+
+  # folder:
+  # Folder backend trong root project.
+  folder: accounting_api
+
+  # source_dir:
+  # Folder source backend.
+  source_dir: accounting_api/src
+
+  # tests_dir:
+  # Folder test backend.
+  tests_dir: accounting_api/tests
+
+  # architecture:
+  # Kiến trúc backend.
+  architecture: Clean Architecture
+
+  # api_project:
+  # Project API.
+  #
+  # Nếu project thực tế khác tên, AI phải đọc cấu trúc hiện tại.
+  api_project: Accounting.Api
+
+  # application_project:
+  # Project Application layer.
+  application_project: Accounting.Application
+
+  # domain_project:
+  # Project Domain layer.
+  domain_project: Accounting.Domain
+
+  # infrastructure_project:
+  # Project Infrastructure layer.
+  infrastructure_project: Accounting.Infrastructure
+
+  # database:
+  # Database engine.
+  database: SQL Server
+
+  # orm:
+  # ORM.
+  orm: Entity Framework Core
+
+  # auth:
+  # Authentication.
+  auth: JWT
+
+  # validation:
+  # Backend validation library.
+  validation: FluentValidation
+
+  # api_version:
+  # API version prefix.
+  api_version: v1
+
+  # api_base_path:
+  # Base path API.
+  api_base_path: /api/v1
+
+  # tenant_strategy:
+  # Cách xác định tenant.
+  #
+  # jwt_claim:
+  #   TenantId lấy từ JWT claim.
+  #
+  # header:
+  #   TenantId lấy từ X-Tenant-Id.
+  #
+  # jwt_claim_or_header:
+  #   Ưu tiên claim, fallback header.
+  tenant_strategy: jwt_claim_or_header
+
+  # tenant_header:
+  # Header tenant nếu dùng header.
+  tenant_header: X-Tenant-Id
+
+  # standard_response:
+  # true = backend API dùng response wrapper chuẩn.
+  standard_response: true
+
+  # soft_delete:
+  # true = entity dùng soft delete.
+  soft_delete: true
+
+  # audit_fields:
+  # true = entity có CreatedAt, CreatedBy, UpdatedAt...
+  audit_fields: true
+
+  # swagger:
+  # true = API cần Swagger/OpenAPI.
+  swagger: true
+
+
+# ============================================================
+# 11. DOMAIN / ENTITY CONFIG
+# ============================================================
+
+entities:
+  # Danh sách entity chính liên quan feature.
+  #
+  # Với Danh mục nhà cung cấp:
+  - Supplier
+
+main_entity: Supplier
+
+aggregate_root: Supplier
+
+
+# entity_fields:
+# Gợi ý field nghiệp vụ chính.
+#
+# AI không được blindly tạo field nếu business rule chưa rõ.
+# Nếu field chưa chắc chắn, AI phải đưa vào issues.md.
+entity_fields:
+  Supplier:
+    - Id
+    - TenantId
+    - SupplierCode
+    - SupplierName
+    - TaxCode
+    - CitizenId
+    - Address
+    - ProvinceCode
+    - ProvinceName
+    - DistrictCode
+    - DistrictName
+    - WardCode
+    - WardName
+    - Phone
+    - Email
+    - ContactPerson
+    - SupplierGroupId
+    - OpeningDebtAmount
+    - CurrentDebtAmount
+    - Status
+    - IsActive
+    - IsDeleted
+    - CreatedAt
+    - CreatedBy
+    - UpdatedAt
+    - UpdatedBy
+    - DeletedAt
+    - DeletedBy
+
+
+# ============================================================
+# 12. PERMISSIONS
+# ============================================================
+
+permissions:
+  # Quyền xem danh sách/chi tiết.
+  - supplier.view
+
+  # Quyền thêm mới.
+  - supplier.create
+
+  # Quyền cập nhật.
+  - supplier.update
+
+  # Quyền xóa.
+  - supplier.delete
+
+  # Quyền xóa hàng loạt.
+  - supplier.bulkDelete
+
+  # Quyền xuất Excel.
+  - supplier.export
+
+  # Quyền cập nhật địa chỉ.
+  - supplier.updateAddress
+
+  # Quyền trả tiền nhà cung cấp.
+  - supplier.pay
+
+  # Quyền lập chứng từ mua hàng.
+  - supplier.createPurchaseVoucher
+
+
+permission_mapping:
+  # Mapping quyền với UI/API.
+  #
+  # AI dùng để:
+  # - ẩn/disable button frontend
+  # - gắn permission attribute backend
+  # - tạo test case permission
+  supplier.view:
+    frontend:
+      - view list page
+      - view detail
+    backend:
+      - GET /api/v1/suppliers
+      - GET /api/v1/suppliers/{id}
+
+  supplier.create:
+    frontend:
+      - show Add button
+    backend:
+      - POST /api/v1/suppliers
+
+  supplier.update:
+    frontend:
+      - show Edit action
+    backend:
+      - PUT /api/v1/suppliers/{id}
+
+  supplier.delete:
+    frontend:
+      - show Delete action
+    backend:
+      - DELETE /api/v1/suppliers/{id}
+
+  supplier.bulkDelete:
+    frontend:
+      - show Bulk delete action
+    backend:
+      - POST /api/v1/suppliers/bulk-delete
+
+  supplier.export:
+    frontend:
+      - show Export button
+    backend:
+      - GET /api/v1/suppliers/export
+
+  supplier.updateAddress:
+    frontend:
+      - show Update address button
+    backend:
+      - POST /api/v1/suppliers/update-address
+
+
+# ============================================================
+# 13. SCREENS
+# ============================================================
+
+screens:
+  # Danh sách màn hình thuộc feature.
+  - key: supplier-list
+    name_vi: Danh sách nhà cung cấp
+    route: /categories/suppliers
+    primary: true
+    description: Màn hình hiển thị danh sách nhà cung cấp, tìm kiếm, lọc, phân trang, thao tác nhanh.
+
+  - key: supplier-form
+    name_vi: Thêm/Sửa nhà cung cấp
+    route: /categories/suppliers/new
+    primary: false
+    description: Form thêm mới hoặc cập nhật thông tin nhà cung cấp.
+
+  - key: supplier-detail
+    name_vi: Xem chi tiết nhà cung cấp
+    route: /categories/suppliers/:id
+    primary: false
+    description: Màn hình xem chi tiết thông tin nhà cung cấp.
+
+
+# ============================================================
+# 14. FEATURE CAPABILITIES
+# ============================================================
+
+capabilities:
+  # Danh sách chức năng dự kiến.
+  #
+  # AI phải so sánh các capability này với:
+  # - current UI images
+  # - reference UI images
+  # - reference markdown docs
+  # để xác định Matched/Missing/Conflict/Unclear.
+  - key: supplier-list
+    name_vi: Xem danh sách nhà cung cấp
+    type: frontend_backend
+    required: true
+
+  - key: supplier-search
+    name_vi: Tìm kiếm nhà cung cấp
+    type: frontend_backend
+    required: true
+
+  - key: supplier-filter
+    name_vi: Lọc nhà cung cấp
+    type: frontend_backend
+    required: true
+
+  - key: supplier-sort
+    name_vi: Sắp xếp danh sách
+    type: frontend_backend
+    required: true
+
+  - key: supplier-pagination
+    name_vi: Phân trang
+    type: frontend_backend
+    required: true
+
+  - key: supplier-create
+    name_vi: Thêm nhà cung cấp
+    type: frontend_backend
+    required: true
+
+  - key: supplier-update
+    name_vi: Sửa nhà cung cấp
+    type: frontend_backend
+    required: true
+
+  - key: supplier-delete
+    name_vi: Xóa nhà cung cấp
+    type: frontend_backend
+    required: true
+
+  - key: supplier-bulk-delete
+    name_vi: Xóa hàng loạt
+    type: frontend_backend
+    required: false
+
+  - key: supplier-export
+    name_vi: Xuất Excel
+    type: frontend_backend
+    required: true
+
+  - key: supplier-update-address
+    name_vi: Cập nhật địa chỉ
+    type: frontend_backend
+    required: false
+
+  - key: supplier-summary
+    name_vi: Tổng quan công nợ
+    type: frontend_backend
+    required: true
+
+  - key: supplier-pay
+    name_vi: Trả tiền nhà cung cấp
+    type: frontend_backend
+    required: false
+
+  - key: supplier-purchase-voucher
+    name_vi: Lập chứng từ mua hàng
+    type: frontend_backend
+    required: false
+
+
+# ============================================================
+# 15. API EXPECTATION
+# ============================================================
+
+api:
+  # base_path:
+  # Base path API.
+  base_path: /api/v1
+
+  # endpoints:
+  # API dự kiến. Phase 4 API Contract Review sẽ xác nhận lại.
+  endpoints:
+    - key: get-suppliers
+      method: GET
+      path: /api/v1/suppliers
+      permission: supplier.view
+      description: Lấy danh sách nhà cung cấp có paging/search/filter/sort.
+
+    - key: get-supplier-detail
+      method: GET
+      path: /api/v1/suppliers/{id}
+      permission: supplier.view
+      description: Lấy chi tiết nhà cung cấp.
+
+    - key: create-supplier
+      method: POST
+      path: /api/v1/suppliers
+      permission: supplier.create
+      description: Tạo mới nhà cung cấp.
+
+    - key: update-supplier
+      method: PUT
+      path: /api/v1/suppliers/{id}
+      permission: supplier.update
+      description: Cập nhật nhà cung cấp.
+
+    - key: delete-supplier
+      method: DELETE
+      path: /api/v1/suppliers/{id}
+      permission: supplier.delete
+      description: Xóa mềm nhà cung cấp.
+
+    - key: bulk-delete-suppliers
+      method: POST
+      path: /api/v1/suppliers/bulk-delete
+      permission: supplier.bulkDelete
+      description: Xóa hàng loạt nhà cung cấp.
+
+    - key: supplier-summary
+      method: GET
+      path: /api/v1/suppliers/summary
+      permission: supplier.view
+      description: Lấy tổng quan công nợ nhà cung cấp.
+
+    - key: export-suppliers
+      method: GET
+      path: /api/v1/suppliers/export
+      permission: supplier.export
+      description: Xuất Excel danh sách nhà cung cấp.
+
+    - key: update-supplier-address
+      method: POST
+      path: /api/v1/suppliers/update-address
+      permission: supplier.updateAddress
+      description: Cập nhật địa chỉ nhà cung cấp.
+
+    - key: check-supplier-code
+      method: GET
+      path: /api/v1/suppliers/check-code
+      permission: supplier.view
+      description: Kiểm tra trùng mã nhà cung cấp.
+
+    - key: check-supplier-tax-code
+      method: GET
+      path: /api/v1/suppliers/check-tax-code
+      permission: supplier.view
+      description: Kiểm tra trùng mã số thuế.
+
+
+# ============================================================
+# 16. PAGING / SORTING / FILTERING
+# ============================================================
+
+list_query:
+  # page_index_base:
+  # pageIndex bắt đầu từ 1 hay 0.
+  #
+  # Khuyến nghị backend API dùng 1.
+  page_index_base: 1
+
+  # default_page_size:
+  # Page size mặc định.
+  default_page_size: 100
+
+  # max_page_size:
+  # Page size tối đa để tránh query/export quá nặng.
+  max_page_size: 500
+
+  # searchable_fields:
+  # Các field được search bởi keyword.
+  searchable_fields:
+    - supplierCode
+    - supplierName
+    - taxCode
+    - phone
+    - email
+    - address
+
+  # sortable_fields:
+  # Whitelist các field được sort.
+  sortable_fields:
+    - supplierCode
+    - supplierName
+    - currentDebtAmount
+    - updatedAt
+    - createdAt
+
+  # filters:
+  # Bộ lọc dự kiến.
+  filters:
+    - status
+    - supplierGroupId
+    - provinceCode
+    - hasDebt
+    - isDebtNegative
+    - minDebtAmount
+    - maxDebtAmount
+    - taxCode
+
+
+# ============================================================
+# 17. BUSINESS RULES
+# ============================================================
+
+business_rules:
+  # AI phải đưa các rule này vào Backend Basic Design,
+  # API Contract, Test Plan.
+  - key: supplier-code-unique-per-tenant
+    description: Mã nhà cung cấp là duy nhất trong từng tenant.
+    source: config
+    required: true
+
+  - key: tax-code-unique-per-tenant
+    description: Mã số thuế có thể cần duy nhất trong từng tenant, cần xác nhận nếu tài liệu không rõ.
+    source: config
+    required: false
+    need_confirmation: true
+
+  - key: soft-delete
+    description: Xóa nhà cung cấp là xóa mềm.
+    source: config
+    required: true
+
+  - key: cannot-delete-with-transactions
+    description: Không cho xóa nhà cung cấp nếu đã phát sinh chứng từ hoặc công nợ.
+    source: config
+    required: true
+
+  - key: tenant-isolation
+    description: Chỉ được truy cập dữ liệu nhà cung cấp thuộc tenant hiện tại.
+    source: config
+    required: true
+
+  - key: negative-debt-display
+    description: Công nợ âm hiển thị màu đỏ và trong ngoặc ở frontend.
+    source: config
+    required: true
+
+
+# ============================================================
+# 18. VALIDATION RULES
+# ============================================================
+
+validation:
+  SupplierCode:
+    required: true
+    max_length: 50
+    unique_per_tenant: true
+    description: Mã nhà cung cấp bắt buộc, không trùng trong tenant.
+
+  SupplierName:
+    required: true
+    max_length: 255
+    description: Tên nhà cung cấp bắt buộc.
+
+  TaxCode:
+    required: false
+    max_length: 50
+    unique_per_tenant: false
+    need_confirmation: true
+    description: Mã số thuế không bắt buộc, rule unique cần xác nhận.
+
+  Email:
+    required: false
+    format: email
+    max_length: 255
+
+  Phone:
+    required: false
+    format: phone
+    max_length: 50
+
+  Address:
+    required: false
+    max_length: 500
+
+  CurrentDebtAmount:
+    required: false
+    type: decimal
+    allow_negative: true
+
+
+# ============================================================
+# 19. MULTI-TENANT CONFIG
+# ============================================================
+
+multi_tenant:
+  # enabled:
+  # true = feature bắt buộc hỗ trợ multi-tenant.
+  enabled: true
+
+  # tenant_source:
+  # Cách xác định tenant.
+  #
+  # jwt_claim:
+  #   Lấy từ JWT claim.
+  #
+  # header:
+  #   Lấy từ header.
+  #
+  # jwt_claim_or_header:
+  #   Ưu tiên JWT claim, fallback header.
+  tenant_source: jwt_claim_or_header
+
+  # tenant_header:
+  # Header tenant nếu dùng.
+  tenant_header: X-Tenant-Id
+
+  # tenant_claim:
+  # Claim tenant trong JWT.
+  tenant_claim: tenant_id
+
+  # frontend_query_key_include_tenant:
+  # true = React Query key phải chứa tenantId.
+  frontend_query_key_include_tenant: true
+
+  # backend_enforce_tenant_filter:
+  # true = mọi query backend phải filter TenantId.
+  backend_enforce_tenant_filter: true
+
+  # block_cross_tenant_access:
+  # true = không cho user tenant A truy cập data tenant B.
+  block_cross_tenant_access: true
+
+
+# ============================================================
+# 20. SECURITY CONFIG
+# ============================================================
+
+security:
+  # authentication_required:
+  # true = API cần JWT.
+  authentication_required: true
+
+  # authorization_required:
+  # true = API cần permission.
+  authorization_required: true
+
+  # permission_based_ui:
+  # true = frontend phải ẩn/disable UI theo permission.
+  permission_based_ui: true
+
+  # protect_export:
+  # true = export Excel phải kiểm tra permission.
+  protect_export: true
+
+  # prevent_over_posting:
+  # true = backend không bind trực tiếp entity từ request.
+  prevent_over_posting: true
+
+  # expose_entity_directly:
+  # false = API không trả EF entity trực tiếp.
+  expose_entity_directly: false
+
+
+# ============================================================
+# 21. TEST CONFIG
+# ============================================================
+
+testing:
+  # backend:
+  # Cấu hình test backend.
+  backend:
+    enabled: true
+    framework: xUnit
+    assertion_library: FluentAssertions
+    mock_library: Moq
+    integration_test: true
+    tenant_isolation_test: true
+    permission_test: true
+
+  # frontend:
+  # Cấu hình test frontend.
+  frontend:
+    enabled: true
+    framework: Vitest
+    component_testing: React Testing Library
+    api_mocking: MSW
+    e2e: Playwright
+    permission_test: true
+    loading_empty_error_test: true
+
+  # integration:
+  # Cấu hình integration test.
+  integration:
+    enabled: true
+    test_api_contract: true
+    test_auth: true
+    test_permission: true
+    test_tenant: true
+    test_paging_search_filter_sort: true
+
+
+# ============================================================
+# 22. COMMANDS
+# ============================================================
+
+commands:
+  # Các command gợi ý để AI biết cách chạy project/test.
+  #
+  # Nếu command thực tế khác, AI phải đọc package.json/.csproj
+  # hoặc hỏi user.
+  frontend_install: npm install
+  frontend_dev: npm run dev
+  frontend_build: npm run build
+  frontend_test: npm run test
+  frontend_typecheck: npm run typecheck
+
+  backend_restore: dotnet restore
+  backend_build: dotnet build
+  backend_test: dotnet test
+  backend_run: dotnet run
+  backend_migration_add: dotnet ef migrations add AddSuppliers
+  backend_database_update: dotnet ef database update
+
+
+# ============================================================
+# 23. OUTPUT FILES
+# ============================================================
+
+output_files:
+  workflow_status: docs/features/suppliers/workflow-status.md
+  issues: docs/features/suppliers/issues.md
+  visual_review_issues: docs/features/suppliers/visual-review-issues.md
+
+  phase_1: docs/features/suppliers/01-frontend-basic-design.md
+  phase_2: docs/features/suppliers/02-frontend-ui-pixel-analysis.md
+  phase_3: docs/features/suppliers/03-backend-basic-design.md
+  phase_4: docs/features/suppliers/04-api-contract-review.md
+  phase_5: docs/features/suppliers/05-frontend-implementation-plan.md
+  phase_6: docs/features/suppliers/06-backend-implementation-plan.md
+  phase_7: docs/features/suppliers/07-backend-coding-summary.md
+  phase_8: docs/features/suppliers/08-frontend-coding-summary.md
+  phase_9: docs/features/suppliers/09-frontend-visual-review.md
+  phase_10: docs/features/suppliers/10-backend-test-plan.md
+  phase_11: docs/features/suppliers/11-frontend-test-plan.md
+  phase_12: docs/features/suppliers/12-integration-test-plan.md
+  phase_13: docs/features/suppliers/13-final-feature-review.md
+
+
+# ============================================================
+# 24. AI BEHAVIOR RULES
+# ============================================================
+
+ai_rules:
+  # read_before_write:
+  # true = trước khi tạo/sửa phase, AI phải đọc các file cần thiết.
+  read_before_write: true
+
+  # do_not_pretend_file_access:
+  # true = nếu AI không đọc được file/folder, phải nói rõ, không được giả vờ.
+  do_not_pretend_file_access: true
+
+  # ask_when_unclear:
+  # true = nếu thiếu thông tin quan trọng, AI phải ghi issue hoặc hỏi user.
+  ask_when_unclear: true
+
+  # mark_assumptions:
+  # true = mọi giả định phải ghi vào issues.md.
+  mark_assumptions: true
+
+  # stop_after_each_phase:
+  # true = chạy xong phase phải dừng.
+  stop_after_each_phase: true
+
+  # require_user_approval:
+  # true = cần user approve phase trước khi qua phase sau.
+  require_user_approval: true
+
+  # no_unrelated_changes:
+  # true = không sửa file ngoài scope feature.
+  no_unrelated_changes: true
+
+  # preserve_user_reviewed_content:
+  # true = khi cập nhật tài liệu đã review, không rewrite toàn bộ nếu không cần.
+  preserve_user_reviewed_content: true
+
+
+# ============================================================
+# 25. FEATURE SIZE HINT
+# ============================================================
+
+feature_size:
+  # size:
+  # Gợi ý độ lớn feature.
+  #
+  # small:
+  #   thay đổi nhỏ, ít file.
+  #
+  # medium:
+  #   một màn hoặc một nhóm API.
+  #
+  # large:
+  #   fullstack feature nhiều màn, API, DB, test.
+  #
+  # Danh mục nhà cung cấp là large.
+  size: large
+
+  # complexity:
+  # Mức độ phức tạp nghiệp vụ.
+  complexity: high
+
+  # reason:
+  # Lý do đánh giá.
+  reason: Feature gồm UI danh sách, form, detail, API, database, permission, multi-tenant, export, test và visual review.
+
+
+# ============================================================
+# 26. REVIEW COMMANDS
+# ============================================================
+
+review_commands:
+  approve:
+    - approve phase {number}
+    - duyệt phase {number}
+    - ok phase {number}
+
+  request_changes:
+    - changes requested phase {number}: {notes}
+    - sửa phase {number}: {notes}
+
+  answer_issue:
+    - answer item {ID}: {answer}
+    - confirm item {ID}: {decision}
+
+  confirm_coding:
+    backend:
+      - confirm backend coding
+      - xác nhận code backend
+    frontend:
+      - confirm frontend coding
+      - xác nhận code frontend
+
+  visual_fix:
+    - fix visual issues phase 9
+    - fix visual issues P9
+    - sửa UI theo visual review

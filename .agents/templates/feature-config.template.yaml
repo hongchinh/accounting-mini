@@ -1,0 +1,103 @@
+# Feature Config Template
+# Copy this file to: docs/features/{feature-folder}/config.yaml
+# Replace all placeholder values before running /fullstack-feature-workflow
+
+role: web
+feature: danh-muc-nha-cung-cap       # Unique feature identifier (kebab-case, used by /fullstack-feature-workflow command)
+folder: suppliers                      # Feature folder name under docs/features/
+name_vi: Danh mục nhà cung cấp        # Vietnamese display name (used in document titles)
+output_type: markdown
+
+project:
+  backend: accounting_api              # Backend project folder
+  frontend: accounting_web             # Frontend project folder
+
+input:
+  current_ui_images: docs/features/suppliers/images                    # Current UI screenshots to implement
+  reference_ui_images: docs/features/suppliers/references/images       # Reference UI screenshots (MISA, KiotViet...)
+  reference_markdown: docs/features/suppliers/references/markdown      # Reference business documents
+
+documentation_level: compact | standard | detailed  
+#compact: chỉ tạo bảng chính, ngắn.
+#standard: đủ dùng.
+#detailed: dùng khi feature phức tạp.
+
+workflow_mode: full | frontend_only | backend_only | ui_only | bugfix | quick_change
+
+workflow:
+  phases:
+    - frontend-basic-design            # Phase 1
+    - backend-basic-design             # Phase 2
+    - backend-api-contract-review      # Phase 3
+    - frontend-implementation-plan     # Phase 4
+    - backend-implementation-plan      # Phase 5
+    - backend-coding                   # Phase 6
+    - frontend-coding                  # Phase 7
+    - backend-test                     # Phase 8
+    - frontend-test                    # Phase 9
+    - integration-test                 # Phase 10
+
+visual_review:
+  enabled: true
+  level: strict # off | light | strict
+  require_actual_screenshot: true
+  block_on_critical: true
+  block_on_high: true
+#off: không chạy phase 2 và 9.
+#light: chỉ checklist, không phân tích chi tiết từng pixel.
+#strict: dùng khi muốn giống ảnh.
+
+token_budget:
+  max_doc_lines: 250
+  max_table_rows: 20
+  summarize_existing_docs: true
+  do_not_repeat_contract: true
+
+cost_optimization:
+  enabled: true
+  max_output: concise
+  avoid_repeating_previous_docs: true
+  summarize_existing_content: true
+  only_expand_when_requested: true
+
+phase_policy:
+  run_one_phase_at_a_time: true
+  require_review_after_each_phase: true
+  skip_irrelevant_phases: true
+  
+frontend:
+  stack:
+    - React
+    - TypeScript
+    - Vite
+    - TailwindCSS
+    - AG Grid
+    - React Query
+    - Axios
+    - React Router
+
+backend:
+  stack:
+    - .NET 9
+    - ASP.NET Core Web API
+    - Entity Framework Core
+    - SQL Server
+    - Clean Architecture
+    - JWT
+    - FluentValidation
+    - Swagger
+    - xUnit
+
+# List the main domain entities for this feature
+entities:
+  - Supplier
+
+# List all permissions this feature requires (used in Phase 2, 3, 6, 7)
+permissions:
+  - supplier.view
+  - supplier.create
+  - supplier.update
+  - supplier.delete
+  - supplier.export
+  - supplier.bulkDelete
+  - supplier.updateAddress

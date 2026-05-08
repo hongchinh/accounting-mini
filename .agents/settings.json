@@ -1,0 +1,7 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(Get-ChildItem \"d:\\\\Projects\\\\AccountingMini\\\\.ai\\\\skills\\\\\" | Select-Object Name, Length, LastWriteTime | Format-Table -AutoSize)"
+    ]
+  }
+}

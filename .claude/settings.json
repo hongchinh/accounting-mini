@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(Get-ChildItem \"d:\\\\Projects\\\\AccountingMini\\\\.ai\\\\skills\\\\\" | Select-Object Name, Length, LastWriteTime | Format-Table -AutoSize)",
+      "Bash(Select-String -Path \"d:\\\\Projects\\\\AccountingMini\\\\.claude\\\\skills\\\\fullstack-feature-workflow.md\" -Pattern \"^## \\\\d+\\\\. Phase \\\\d+ Rules\")",
+      "Bash(Select-Object -ExpandProperty Line)"
+    ]
+  }
+}
