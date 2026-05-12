@@ -17,16 +17,16 @@ User runs this workflow with:
 Example:
 
 ```
-/fullstack-feature-workflow danh-muc-nha-cung-cap
+/fullstack-feature-workflow suppliers
 ```
 
 When this command is received, AI must execute the following steps **in order**, without skipping:
 
 1. Treat `{feature}` as the feature identifier.
 2. Search for a matching config in `docs/features/*/config.yaml`.
-3. Match config by field `feature: {feature}` — or by folder name if no match.
+3. Match config by field `feature: {feature}` - or by folder name if no match.
 4. Use the matched folder as the feature folder.
-5. Read `config.yaml` — only the fields needed for the current phase (see Section 42).
+5. Read `config.yaml` - only the fields needed for the current phase (see Section 42).
 6. Inspect input folders.
 7. Read or create `workflow-status.md`.
 8. Read or create `issues.md`.
@@ -53,17 +53,17 @@ docs/features/{feature-folder}/config.yaml
 
 ### Config must be compact
 
-- `config.yaml` must contain **only feature-specific data** — no long comments, no usage guides, no explanations.
+- `config.yaml` must contain **only feature-specific data** - no long comments, no usage guides, no explanations.
 - Field meanings and usage guidance belong in `.claude/templates/feature-config-guide.md`.
 - AI must not copy content from the config guide into phase output documents.
-- AI must not repeat the full config block in phase output documents — reference relevant field values only.
+- AI must not repeat the full config block in phase output documents - reference relevant field values only.
 
 ### Minimum config
 
 ```yaml
 role: web
-feature: danh-muc-nha-cung-cap
-name_vi: Danh mục nhà cung cấp
+feature: suppliers
+name_vi: Supplier Management
 output_type: markdown
 ```
 
@@ -71,12 +71,12 @@ output_type: markdown
 
 ```yaml
 role: fullstack
-feature: danh-muc-nha-cung-cap
+feature: suppliers
 folder: suppliers
-name_vi: Danh mục nhà cung cấp
+name_vi: Supplier Management
 name_en: Supplier Management
 output_type: markdown
-language: vi
+language: en
 
 workflow_mode: full
 documentation_level: standard
@@ -127,7 +127,7 @@ If optional fields are missing, AI must:
 2. Record each assumption in `docs/features/{feature-folder}/issues.md` as type `Assumption`.
 3. **Not** stop or ask the user unless the missing field is required for correctness.
 
-AI must **not** read the full config guide (`feature-config-guide.md`) on every run — only read it if the user explicitly requests field explanations or if a field value is ambiguous.
+AI must **not** read the full config guide (`feature-config-guide.md`) on every run - only read it if the user explicitly requests field explanations or if a field value is ambiguous.
 
 ---
 
@@ -173,10 +173,10 @@ The workflow has exactly **13 phases** in strict order:
 
 **Rationale for phase order:**
 - Phase 1 (Frontend Basic Design) analyzes UI and business scope first.
-- Phase 2 (Frontend UI Pixel Analysis) extracts layout, spacing, design tokens early — before backend design, so backend knows data requirements.
+- Phase 2 (Frontend UI Pixel Analysis) extracts layout, spacing, design tokens early - before backend design, so backend knows data requirements.
 - Phase 3 (Backend Basic Design) uses both Frontend Basic Design AND UI Pixel Analysis as input.
 - Phase 4 (Backend API Contract Review) is the hard gate before all planning and coding.
-- Phase 7 (Backend Coding) before Phase 8 (Frontend Coding) — backend API must exist before frontend calls it.
+- Phase 7 (Backend Coding) before Phase 8 (Frontend Coding) - backend API must exist before frontend calls it.
 - Phase 9 (Frontend Visual Review) after coding, requires actual screenshots.
 - Phase 13 (Final Feature Review) closes the feature.
 
@@ -196,11 +196,11 @@ Phases may be `Skipped` when `workflow_mode` in config excludes them. A skipped 
 
 ## 5. Phase Completion Detection
 
-**AI must read `workflow-status.md` first** — do not rely only on output file existence.
+**AI must read `workflow-status.md` first** - do not rely only on output file existence.
 
 A document phase is complete only if the output file exists **and** contains one of these status blocks near the top:
 
-**Completed — no blocking issues:**
+**Completed - no blocking issues:**
 ```markdown
 ## Phase Status
 Status: Completed
@@ -208,7 +208,7 @@ Blocking Issues: No
 User Confirmation Required: No
 ```
 
-**Completed — has non-blocking questions:**
+**Completed - has non-blocking questions:**
 ```markdown
 ## Phase Status
 Status: Completed
@@ -216,7 +216,7 @@ Blocking Issues: No
 User Confirmation Required: Yes
 ```
 
-**Blocked — has blocking issues:**
+**Blocked - has blocking issues:**
 ```markdown
 ## Phase Status
 Status: Blocked
@@ -227,12 +227,12 @@ User Confirmation Required: Yes
 For Phase 4 only, use the Approval Status block instead:
 ```markdown
 ## Approval Status
-Status: Approved | Changes required
+Status: Approved | Changes Required
 Blocking Issues: Yes | No
 User Confirmation Required: Yes | No
 ```
 
-**Important:** Phase 4 status must only be `Approved` or `Changes required`. Do not use `Approved with changes`.
+**Important:** Phase 4 status must only be `Approved` or `Changes Required`. Do not use `Approved with changes`.
 
 If a file exists but the status marker is absent, AI must treat it as **incomplete** and ask the user whether to rebuild it or add the status.
 
@@ -245,7 +245,7 @@ Phase 7 (Backend Coding) is complete if source files matching the backend implem
 
 Phase 8 (Frontend Coding) is complete if source files matching the frontend implementation plan exist inside `accounting_web/` and `08-frontend-coding-summary.md` exists.
 
-Phase 9 (Frontend Visual Review) is complete only if actual implementation screenshots exist AND the review document has `Status: Completed` or `Status: Approved` with no unresolved Critical/High issues.
+Phase 9 (Frontend Visual Review) is complete only if actual implementation screenshots exist AND the review document has `## Phase Status: Status: Completed` AND `## Frontend Visual Status` is `Approved` or `Approved with minor issues`, with no unresolved Critical/High issues in `visual-review-issues.md`.
 
 ---
 
@@ -259,7 +259,7 @@ When the user runs `/fullstack-feature-workflow {feature}`, AI must:
 4. Read `issues.md` if it exists.
 5. Read `visual-review-issues.md` if relevant.
 6. Check the status of each phase in `workflow-status.md` first, then verify output files.
-7. Identify the **earliest incomplete phase** (Status ≠ Completed, or Review Status ≠ Approved).
+7. Identify the **earliest incomplete phase** (Status != Completed, or Review Status != Approved).
 8. Check all phase gate conditions for that phase.
 9. If gate conditions are not met, report which gate is blocking.
 10. If gate conditions are met, run **only that phase**.
@@ -268,9 +268,9 @@ When the user runs `/fullstack-feature-workflow {feature}`, AI must:
 13. Stop and wait for user review.
 
 **Example:**
-- Phase 1 Completed + Approved → skip.
-- Phase 2 Completed + Approved → skip.
-- Phase 3 Not Started → **check gate, then run Phase 3**.
+- Phase 1 Completed + Approved -> skip.
+- Phase 2 Completed + Approved -> skip.
+- Phase 3 Not Started -> **check gate, then run Phase 3**.
 
 ---
 
@@ -296,16 +296,17 @@ When the user runs `/fullstack-feature-workflow {feature}`, AI must:
 - Phase 2 Review Status must be `Approved`.
 - Phase 3 Review Status must be `Approved`.
 - No Open item with `Blocking? = Yes` from Phase 1, Phase 2, or Phase 3 in `issues.md`.
+- **Exception:** If Phase 3 is `Skipped` (by `workflow_mode`), all Phase 3 conditions above are waived.
 
 ### Gate before Phase 5 (Frontend Implementation Plan)
 - `01-frontend-basic-design.md` must exist.
 - `02-frontend-ui-pixel-analysis.md` must exist and Review Status must be `Approved`.
 - `04-api-contract-review.md` must exist.
-- Phase 4 Approval Status must be `Approved` (not `Changes required`).
+- Phase 4 Approval Status must be `Approved` (not `Changes Required`).
 - Phase 2 Review Status must be `Approved`.
 - Phase 4 Review Status must be `Approved`.
 - No Open item with `Blocking? = Yes` from any previous phase in `issues.md`.
-- If Phase 4 status is `Changes required`, **AI must stop**.
+- If Phase 4 status is `Changes Required`, **AI must stop**.
 
 ### Gate before Phase 6 (Backend Implementation Plan)
 - `03-backend-basic-design.md` must exist and Review Status must be `Approved`.
@@ -319,17 +320,18 @@ When the user runs `/fullstack-feature-workflow {feature}`, AI must:
 - `03-backend-basic-design.md` exists with `Blocking Issues: No`.
 - `04-api-contract-review.md` is `Approved` with `Blocking Issues: No`.
 - `06-backend-implementation-plan.md` exists and Review Status must be `Approved`.
-- **User must explicitly confirm backend coding** — AI must not begin Phase 7 without:
-  - `confirm backend coding` or `xác nhận code backend`
+- **User must explicitly confirm backend coding** - AI must not begin Phase 7 without:
+  - `confirm backend coding`
 - No Open item with `Blocking? = Yes` in `issues.md`.
 
 ### Gate before Phase 8 (Frontend Coding)
+- Phase 7 Review Status in `workflow-status.md` must be `Approved`.
 - `01-frontend-basic-design.md` exists and Review Status must be `Approved`.
 - `02-frontend-ui-pixel-analysis.md` exists and Review Status must be `Approved`.
 - `04-api-contract-review.md` is `Approved` with `Blocking Issues: No`.
 - `05-frontend-implementation-plan.md` exists and Review Status must be `Approved`.
-- **User must explicitly confirm frontend coding** — AI must not begin Phase 8 without:
-  - `confirm frontend coding` or `xác nhận code frontend`
+- **User must explicitly confirm frontend coding** - AI must not begin Phase 8 without:
+  - `confirm frontend coding`
 - No Open item with `Blocking? = Yes` in `issues.md`.
 
 ### Gate before Phase 9 (Frontend Visual Review)
@@ -347,8 +349,9 @@ When the user runs `/fullstack-feature-workflow {feature}`, AI must:
 
 ### Gate before Phase 11 (Frontend Test)
 - Phase 8 Frontend Coding must be Completed.
-- Phase 9 Frontend Visual Review must be `Approved` or `Approved with minor issues`.
+- Phase 9 Review Status in `workflow-status.md` must be `Approved`.
 - No Critical or High visual issues remain Open in `visual-review-issues.md`.
+- Note: Phase 9 may be approved when `## Frontend Visual Status` is `Approved` or `Approved with minor issues` - both map to Review Status `Approved` in `workflow-status.md`.
 
 ### Gate before Phase 12 (Integration Test)
 - Phase 10 Backend Test Review Status must be `Approved`.
@@ -380,7 +383,7 @@ When the user runs `/fullstack-feature-workflow {feature}`, AI must:
 
 ---
 
-## 9. Phase 1 Rules — Frontend Basic Design
+## 9. Phase 1 Rules - Frontend Basic Design
 
 **Skill file:** `.claude/skills/01-frontend-basic-design.md`
 
@@ -388,23 +391,23 @@ When the user runs `/fullstack-feature-workflow {feature}`, AI must:
 
 **Input:**
 - `docs/features/{feature-folder}/config.yaml`
-- `docs/features/{feature-folder}/images/` — current UI images
-- `docs/features/{feature-folder}/references/images/` — reference UI images
-- `docs/features/{feature-folder}/references/markdown/` — reference business documents
+- `docs/features/{feature-folder}/images/` - current UI images
+- `docs/features/{feature-folder}/references/images/` - reference UI images
+- `docs/features/{feature-folder}/references/markdown/` - reference business documents
 
 **Output:** `docs/features/{feature-folder}/01-frontend-basic-design.md`
 
 **Source priority:**
-1. Current UI images — main source
+1. Current UI images - main source
 2. User requirement / config
 3. Reference markdown
 4. Reference UI images
 
 **AI must analyze:**
-1. Every image in `images/` — describe layout, components, fields, actions, filters, states.
-2. Every image in `references/images/` — describe reference patterns and suggestions.
-3. Every markdown file in `references/markdown/` — extract business rules, flows, validation, glossary.
-4. `config.yaml` — use `name_vi`, `entities`, `permissions`, `capabilities`, `business_rules`.
+1. Every image in `images/` - describe layout, components, fields, actions, filters, states.
+2. Every image in `references/images/` - describe reference patterns and suggestions.
+3. Every markdown file in `references/markdown/` - extract business rules, flows, validation, glossary.
+4. `config.yaml` - use `name_vi`, `entities`, `permissions`, `capabilities`, `business_rules`.
 
 **AI must compare Current UI vs Reference UI vs Reference Markdown.**
 
@@ -474,25 +477,25 @@ User Confirmation Required: Yes | No
 - Do not create any code in `accounting_web/`.
 - Do not create any code in `accounting_api/`.
 - Do not finalize backend API contract.
-- Do not silently implement features that exist only in reference UI or markdown — mark them clearly.
+- Do not silently implement features that exist only in reference UI or markdown - mark them clearly.
 - Do not ignore conflicts.
 - Do not ignore unclear items.
 - Any unclear item must be added to `issues.md`.
 
 ---
 
-## 10. Phase 2 Rules — Frontend UI Pixel Analysis
+## 10. Phase 2 Rules - Frontend UI Pixel Analysis
 
-**Skill file:** `.claude/skills/02-backend-basic-design.md`
+**Skill file:** `.claude/skills/02-frontend-ui-pixel-analysis.md`
 
 **Purpose:** Create precise UI implementation specification from screenshots. This phase runs early (before backend design, frontend plan, and frontend coding) so that layout data requirements inform backend design.
 
 **Input:**
 - `docs/features/{feature-folder}/config.yaml`
 - `docs/features/{feature-folder}/01-frontend-basic-design.md`
-- `docs/features/{feature-folder}/images/` — current UI screenshots (main source)
-- `docs/features/{feature-folder}/references/images/` — reference UI screenshots
-- `docs/features/{feature-folder}/references/markdown/` — if relevant for visual behavior
+- `docs/features/{feature-folder}/images/` - current UI screenshots (main source)
+- `docs/features/{feature-folder}/references/images/` - reference UI screenshots
+- `docs/features/{feature-folder}/references/markdown/` - if relevant for visual behavior
 - Existing style guide if available in the project
 
 **Output:** `docs/features/{feature-folder}/02-frontend-ui-pixel-analysis.md`
@@ -631,16 +634,16 @@ AI must not:
 
 ---
 
-## 11. Phase 3 Rules — Backend Basic Design
+## 11. Phase 3 Rules - Backend Basic Design
 
-**Skill file:** `.claude/skills/03-backend-api-contract-review.md`
+**Skill file:** `.claude/skills/03-backend-basic-design.md`
 
 **Purpose:** Create backend design document based on Phase 1, Phase 2, and all input sources.
 
 **Input:**
 - `docs/features/{feature-folder}/config.yaml`
-- `docs/features/{feature-folder}/01-frontend-basic-design.md` — read entirely: Confirmed Frontend Scope, Updated Frontend API Needs, Gap Analysis, Unclear Items
-- `docs/features/{feature-folder}/02-frontend-ui-pixel-analysis.md` — read for data requirements implied by UI layout
+- `docs/features/{feature-folder}/01-frontend-basic-design.md` - read entirely: Confirmed Frontend Scope, Updated Frontend API Needs, Gap Analysis, Unclear Items
+- `docs/features/{feature-folder}/02-frontend-ui-pixel-analysis.md` - read for data requirements implied by UI layout
 - `docs/features/{feature-folder}/images/`
 - `docs/features/{feature-folder}/references/images/`
 - `docs/features/{feature-folder}/references/markdown/`
@@ -723,14 +726,14 @@ User Confirmation Required: Yes | No
 - Do not ignore frontend open questions from Phase 1.
 - Do not ignore business rules found in reference markdown.
 - If a capability is unclear but may affect API/database, mark it `Need Confirmation`.
-- Do not expose EF entities — always design DTOs separately.
+- Do not expose EF entities - always design DTOs separately.
 - Any unclear API/database/business rule must be added to `issues.md`.
 
 ---
 
-## 12. Phase 4 Rules — Backend API Contract Review
+## 12. Phase 4 Rules - Backend API Contract Review
 
-**Skill file:** `.claude/skills/04-frontend-implementation-plan.md`
+**Skill file:** `.claude/skills/04-backend-api-contract-review.md`
 
 **Purpose:** Compare Phase 1, Phase 2, and Phase 3, resolve all gaps and open questions, produce the final API Contract that serves as **source of truth** for all subsequent phases.
 
@@ -748,7 +751,7 @@ User Confirmation Required: Yes | No
 # Backend API Contract Review: {name_vi}
 
 ## Approval Status
-Status: Approved | Changes required
+Status: Approved | Changes Required
 Blocking Issues: Yes | No
 User Confirmation Required: Yes | No
 
@@ -791,7 +794,7 @@ User Confirmation Required: Yes | No
 
 **Important: Phase 4 Approval Status must only be:**
 - `Approved`
-- `Changes required`
+- `Changes Required`
 
 **Do not use `Approved with changes`.**
 
@@ -823,7 +826,7 @@ User Confirmation Required: Yes | No
 | # | Question | Source Phase | Context | Impact on Contract | Must Resolve Before Coding? |
 |---|----------|-------------|---------|-------------------|------------------------------|
 
-### Approval gate — Status must be `Changes required` if ANY of these exist:
+### Approval gate - Status must be `Changes Required` if ANY of these exist:
 - Critical mismatch between frontend and backend
 - Missing endpoint for a confirmed frontend feature
 - Missing permission for any endpoint
@@ -833,7 +836,7 @@ User Confirmation Required: Yes | No
 - Tenant rule conflict
 - Error response format mismatch
 
-### Approval gate — Status may be `Approved` only when ALL of these are true:
+### Approval gate - Status may be `Approved` only when ALL of these are true:
 - Frontend scope and backend scope are aligned
 - All confirmed frontend features have API support
 - Endpoint routes are clear and agreed
@@ -849,9 +852,9 @@ All API contract issues must be added to `issues.md`.
 
 ---
 
-## 13. Phase 5 Rules — Frontend Implementation Plan
+## 13. Phase 5 Rules - Frontend Implementation Plan
 
-**Skill file:** `.claude/skills/05-backend-implementation-plan.md`
+**Skill file:** `.claude/skills/05-frontend-implementation-plan.md`
 
 **Purpose:** Create the frontend coding plan based on Phase 1 design, Phase 2 UI Pixel Analysis, and Phase 4 contract.
 
@@ -931,9 +934,9 @@ AI must not list backend files in this phase.
 
 ---
 
-## 14. Phase 6 Rules — Backend Implementation Plan
+## 14. Phase 6 Rules - Backend Implementation Plan
 
-**Skill file:** `.claude/skills/06-backend-coding.md`
+**Skill file:** `.claude/skills/06-backend-implementation-plan.md`
 
 **Purpose:** Create the backend coding plan based on Phase 3 design and Phase 4 contract.
 
@@ -976,9 +979,9 @@ AI must not list frontend files in this phase.
 
 ---
 
-## 15. Phase 7 Rules — Backend Coding
+## 15. Phase 7 Rules - Backend Coding
 
-**Skill file:** `.claude/skills/06-backend-coding.md`
+**Skill file:** `.claude/skills/07-backend-coding.md`
 
 **Purpose:** Implement backend source code.
 
@@ -992,7 +995,7 @@ AI must not list frontend files in this phase.
 - `docs/features/{feature-folder}/07-backend-coding-summary.md`
 
 Required confirmation before starting:
-- User must say `confirm backend coding` or `xác nhận code backend`.
+- User must say `confirm backend coding`.
 
 AI must read actual project structure before creating files to use the correct namespace and folder conventions.
 
@@ -1014,12 +1017,12 @@ AI must read actual project structure before creating files to use the correct n
 14. Build / typecheck / test if available
 
 ### Backend coding rules
-- Follow Vertical Slice Architecture with MediatR — no IService or IRepository.
+- Follow Vertical Slice Architecture with MediatR - no IService or IRepository.
 - Do not put business logic in Endpoint.
-- Do not expose EF entities directly through API — always use DTOs.
+- Do not expose EF entities directly through API - always use DTOs.
 - Use `async/await` and `CancellationToken`.
 - Use FluentValidation (auto-run by pipeline behavior).
-- Use `Result<T>` pattern — endpoint uses `.Match()` to convert to HTTP response.
+- Use `Result<T>` pattern - endpoint uses `.Match()` to convert to HTTP response.
 - Use `PaginatedList<T>` for list endpoints.
 - Enforce tenant isolation via `ITenantEntity` global query filter.
 - Enforce permission on every endpoint.
@@ -1052,9 +1055,9 @@ User Confirmation Required: Yes | No
 
 ---
 
-## 16. Phase 8 Rules — Frontend Coding
+## 16. Phase 8 Rules - Frontend Coding
 
-**Skill file:** `.claude/skills/07-frontend-coding.md`
+**Skill file:** `.claude/skills/08-frontend-coding.md`
 
 **Purpose:** Implement pixel-perfect frontend source code based on API Contract and UI Pixel Analysis.
 
@@ -1072,7 +1075,7 @@ User Confirmation Required: Yes | No
 - `docs/features/{feature-folder}/08-frontend-coding-summary.md`
 
 Required confirmation before starting:
-- User must say `confirm frontend coding` or `xác nhận code frontend`.
+- User must say `confirm frontend coding`.
 
 ### Required implementation order
 
@@ -1094,16 +1097,16 @@ Required confirmation before starting:
 
 ### Frontend coding rules
 - Follow existing frontend architecture.
-- Use API Contract as source of truth — do not invent endpoints.
-- Use UI Pixel Analysis as visual source of truth — do not guess layout.
+- Use API Contract as source of truth - do not invent endpoints.
+- Use UI Pixel Analysis as visual source of truth - do not guess layout.
 - Use design tokens from Phase 2 instead of hard-coded style values.
-- Do not call API directly inside UI components — use service functions.
+- Do not call API directly inside UI components - use service functions.
 - Use React Query hooks for all data fetching.
-- Use typed DTOs — no `any` unless truly necessary.
+- Use typed DTOs - no `any` unless truly necessary.
 - Do not hard-code `tenantId`.
 - Do not hard-code permission strings.
 - Handle loading, empty, and error states on every screen.
-- Respect permission-based UI — hide (not just disable) when no permission.
+- Respect permission-based UI - hide (not just disable) when no permission.
 - Include `tenantId` in query keys.
 - Do not modify `accounting_api/`.
 - Do not change visual hierarchy from screenshot.
@@ -1160,16 +1163,16 @@ Or upload screenshots directly in the conversation.
 
 ---
 
-## 17. Phase 9 Rules — Frontend Visual Review
+## 17. Phase 9 Rules - Frontend Visual Review
 
-**Skill file:** `.claude/skills/07-frontend-coding.md`
+**Skill file:** `.claude/skills/09-frontend-visual-review.md`
 
 **Purpose:** Compare source UI screenshots with actual frontend implementation screenshots and detect visual mismatches.
 
 **Input:**
 
 Required:
-- `docs/features/{feature-folder}/images/` — current UI screenshots (main source)
+- `docs/features/{feature-folder}/images/` - current UI screenshots (main source)
 - `docs/features/{feature-folder}/02-frontend-ui-pixel-analysis.md`
 - `docs/features/{feature-folder}/08-frontend-coding-summary.md`
 - Actual implementation screenshots from:
@@ -1182,7 +1185,7 @@ Optional:
 
 **Output:**
 - `docs/features/{feature-folder}/09-frontend-visual-review.md`
-- `docs/features/{feature-folder}/visual-review-issues.md` — updated with all visual issues found
+- `docs/features/{feature-folder}/visual-review-issues.md` - updated with all visual issues found
 
 ### If actual screenshots are missing
 
@@ -1275,14 +1278,14 @@ Status values: `Pass` / `Fail` / `Partial` / `Not Applicable`
 
 ```markdown
 ## Frontend Visual Status
-[Approved | Approved with minor issues | Changes required]
+[Approved | Approved with minor issues | Changes Required]
 ```
 
 **Rules:**
-- If any Critical issue exists → `Changes required`.
-- If any High issue exists → `Changes required`.
-- If only Medium/Low issues exist → `Approved with minor issues`.
-- If no issues or only acceptable Low issues → `Approved`.
+- If any Critical issue exists -> `Changes Required`.
+- If any High issue exists -> `Changes Required`.
+- If only Medium/Low issues exist -> `Approved with minor issues`.
+- If no issues or only acceptable Low issues -> `Approved`.
 
 ### Phase 9 restrictions
 
@@ -1290,13 +1293,13 @@ AI must not:
 - Approve visual review without actual screenshots.
 - Ignore Critical or High mismatches.
 - Mark Phase 9 complete when screen is clearly different from source.
-- Fix code during review — create a fix plan only unless user explicitly asks to fix.
+- Fix code during review - create a fix plan only unless user explicitly asks to fix.
 - Use reference UI as main source when current UI images exist.
 - Claim pixel-perfect match without actual visual comparison.
 
 ### Visual Issue Fix Command
 
-When Phase 9 result is `Changes required`, AI must not allow Phase 11 or Phase 12 to proceed.
+When Phase 9 result is `Changes Required`, AI must not allow Phase 11 or Phase 12 to proceed.
 
 When user says:
 
@@ -1313,7 +1316,7 @@ fix visual issues P9
 or:
 
 ```
-sửa UI theo visual review
+fix UI according to visual review
 ```
 
 AI must:
@@ -1324,7 +1327,7 @@ AI must:
 5. Do not change API logic unless the visual issue requires data display adjustment.
 6. Do not modify `accounting_api/`.
 7. After fixing, update `docs/features/{feature-folder}/08-frontend-coding-summary.md`.
-8. Update `visual-review-issues.md` — mark fixed issues as `Fixed`.
+8. Update `visual-review-issues.md` - mark fixed issues as `Fixed`.
 9. Ask user to rerun app and provide new actual screenshots.
 10. Keep Phase 9 Review Status as `Pending` until visual review passes.
 
@@ -1332,9 +1335,9 @@ If user says `fix all visual issues`, AI may also fix Medium and Low issues but 
 
 ---
 
-## 18. Phase 10 Rules — Backend Test
+## 18. Phase 10 Rules - Backend Test
 
-**Skill file:** `.claude/skills/08-backend-testing.md`
+**Skill file:** `.claude/skills/10-backend-testing.md`
 
 **Purpose:** Create backend test plan and backend test code.
 
@@ -1384,9 +1387,9 @@ AI must not create backend test files outside `accounting_api/tests/`.
 
 ---
 
-## 19. Phase 11 Rules — Frontend Test
+## 19. Phase 11 Rules - Frontend Test
 
-**Skill file:** `.claude/skills/09-frontend-testing.md`
+**Skill file:** `.claude/skills/11-frontend-testing.md`
 
 **Purpose:** Create frontend test plan and frontend test code.
 
@@ -1440,9 +1443,9 @@ AI must not create frontend test files outside `accounting_web/`.
 
 ---
 
-## 20. Phase 12 Rules — Integration Test
+## 20. Phase 12 Rules - Integration Test
 
-**Skill file:** `.claude/skills/10-integration-testing.md`
+**Skill file:** `.claude/skills/12-integration-testing.md`
 
 **Purpose:** Verify frontend and backend work together according to API Contract.
 
@@ -1498,7 +1501,9 @@ User Confirmation Required: Yes | No
 
 ---
 
-## 21. Phase 13 Rules — Final Feature Review
+## 21. Phase 13 Rules - Final Feature Review
+
+**Skill file:** `.claude/skills/13-final-feature-review.md`
 
 **Purpose:** Review the complete feature end-to-end before closing.
 
@@ -1556,10 +1561,10 @@ User Confirmation Required: Yes | No
 ```
 
 **Final Verdict values:**
-- `Ready to Merge` — all phases approved, no open blocking issues, no Critical/High visual issues, API Contract approved, tests completed.
-- `Ready with Deferred Items` — all critical phases approved, only non-blocking items deferred with user approval.
-- `Changes Required` — one or more phases need rework.
-- `Blocked` — blocking issues or Critical/High visual issues remain open.
+- `Ready to Merge` - all phases approved, no open blocking issues, no Critical/High visual issues, API Contract approved, tests completed.
+- `Ready with Deferred Items` - all critical phases approved, only non-blocking items deferred with user approval.
+- `Changes Required` - one or more phases need rework.
+- `Blocked` - blocking issues or Critical/High visual issues remain open.
 
 **Ready to Merge only if:**
 - All phases Approved.
@@ -1573,7 +1578,7 @@ User Confirmation Required: Yes | No
 
 ## 22. Final Response Rule
 
-After each workflow phase run, AI must respond in a **compact format**. Do not paste the full document content into chat — it was written to a file.
+After each workflow phase run, AI must respond in a **compact format**. Do not paste the full document content into chat - it was written to a file.
 
 ### Default compact format (always use this)
 
@@ -1581,7 +1586,7 @@ After each workflow phase run, AI must respond in a **compact format**. Do not p
 # Workflow Result
 
 - Feature: {name_vi} (`{feature}`)
-- Phase completed: {n} — {Phase Name}
+- Phase completed: {n} - {Phase Name}
 - Output: {file path}
 - Status: Completed | Blocked
 - Blocking issues: None | {count} open blocking items
@@ -1591,7 +1596,7 @@ After each workflow phase run, AI must respond in a **compact format**. Do not p
 
 Append visual summary only for Phase 8 or 9:
 ```markdown
-- Visual: Actual screenshots {found / missing} — {Critical}/{High}/{Medium}/{Low} issues — {Visual status}
+- Visual: Actual screenshots {found / missing} - {Critical}/{High}/{Medium}/{Low} issues - {Visual status}
 ```
 
 ### Next action line
@@ -1603,7 +1608,7 @@ answer item {ID}: {your answer}
 
 If actual screenshots missing (Phase 9):
 ```
-Run frontend → capture screenshots → docs/features/{feature-folder}/actual/ → /fullstack-feature-workflow {feature}
+Run frontend -> capture screenshots -> docs/features/{feature-folder}/actual/ -> /fullstack-feature-workflow {feature}
 ```
 
 If Phase 9 has Critical/High visual issues:
@@ -1640,7 +1645,7 @@ When `documentation_level = detailed` in config.yaml, or user explicitly request
 - visual-review-issues.md: Updated (if relevant)
 
 ## Inputs Checked
-- Config: {path} — Found / Missing
+- Config: {path} - Found / Missing
 - Current UI images: Found ({n} files) / Missing
 - Reference UI images: Found ({n} files) / Missing
 - Reference markdown docs: Found ({n} files) / Missing
@@ -1675,14 +1680,14 @@ When `documentation_level = detailed` in config.yaml, or user explicitly request
 ## 23. User Confirmation Rules
 
 ### AI must ask for confirmation if:
-- Feature config is missing → ask user to create config using template.
-- Multiple config files match the command → ask which one.
+- Feature config is missing -> ask user to create config using template.
+- Multiple config files match the command -> ask which one.
 - Phase 4 has unresolved questions marked `Must Resolve Before Coding: Yes`.
-- API contract status is `Changes required`.
+- API contract status is `Changes Required`.
 - A requested phase would create or modify source code (Phase 7 or Phase 8).
 - Feature scope is unclear after reading all inputs.
 - AI cannot safely determine the current phase.
-- Phase 9 actual screenshots are missing — ask user to provide them.
+- Phase 9 actual screenshots are missing - ask user to provide them.
 
 ### AI must not ask for confirmation if:
 - Exactly one config matches.
@@ -1701,7 +1706,7 @@ AI must never:
 - Skip the UI Pixel Analysis phase (Phase 2) before frontend coding.
 - Write backend code before Phase 7 is explicitly confirmed.
 - Write frontend code before Phase 8 is explicitly confirmed.
-- Ignore missing input folders silently — always report them.
+- Ignore missing input folders silently - always report them.
 - Ignore unresolved API or database questions.
 - Ignore open blocking issues in `issues.md`.
 - Ignore Critical/High visual issues in `visual-review-issues.md`.
@@ -1709,7 +1714,7 @@ AI must never:
 - Expose EF Core entities directly through API responses.
 - Hard-code `tenantId` anywhere in backend or frontend code.
 - Hard-code permission strings in frontend components.
-- Move to Phase 5 or Phase 6 when Phase 4 status is `Changes required`.
+- Move to Phase 5 or Phase 6 when Phase 4 status is `Changes Required`.
 - Move to Phase 7 or Phase 8 without approved implementation plans.
 - Proceed to the next phase while there are unresolved `Blocking Issues: Yes` items.
 - Approve a phase that has unresolved blocking items.
@@ -1718,7 +1723,7 @@ AI must never:
 - Implement unclear business rules without explicit user confirmation.
 - Implement unclear API or database decisions without explicit user confirmation.
 - Ignore conflicts between Current UI, Reference UI, and Reference Markdown.
-- Automatically continue to the next phase after answering a blocking item — always wait for explicit approval.
+- Automatically continue to the next phase after answering a blocking item - always wait for explicit approval.
 - Mark Phase 9 approved without actual implementation screenshots.
 - Allow Phase 11 or Phase 12 to proceed if Phase 9 has Critical or High visual issues.
 - Treat reference UI as main visual source when current UI images exist.
@@ -1728,6 +1733,8 @@ AI must never:
 - Claim pixel-perfect match without actual visual comparison.
 - Continue to next phase without user review approval.
 - Run next phase automatically without explicit user approval of current phase.
+
+**Note:** The phase gates in Section 7 are the authoritative source for each phase's entry conditions. Section 24 highlights the most critical safety constraints as a quick reference - when in doubt, check Section 7.
 
 ---
 
@@ -1742,11 +1749,11 @@ To run this workflow:
 Example:
 
 ```
-/fullstack-feature-workflow danh-muc-nha-cung-cap
+/fullstack-feature-workflow suppliers
 ```
 
 Normal flow:
-1. AI finds `docs/features/*/config.yaml` matching `feature: danh-muc-nha-cung-cap`.
+1. AI finds `docs/features/*/config.yaml` matching `feature: suppliers`.
 2. AI loads the feature folder.
 3. AI checks input folders: `images/`, `references/images/`, `references/markdown/`, `actual/`.
 4. AI reads `workflow-status.md`.
@@ -1876,7 +1883,7 @@ This section must include the following subsections:
 |---|---|---|---|---|---|
 ```
 
-**ID format:** `P{phase}-Q{n}` questions, `P{phase}-M{n}` missing info, `P{phase}-U{n}` unclear, `P{phase}-C{n}` conflicts, `P{phase}-A{n}` assumptions.
+**ID format:** `P{phase}-Q{n}` questions, `P{phase}-M{n}` missing info, `P{phase}-U{n}` unclear, `P{phase}-C{n}` conflicts, `P{phase}-A{n}` assumptions, `P{phase}-API{n}` API contract issues (Phase 4), `P{phase}-CODE{n}` code issues (Phase 7/8).
 
 **After every phase, AI must copy all unresolved items into `issues.md`.**
 
@@ -1886,7 +1893,7 @@ This section must include the following subsections:
 
 Every phase output file must include one of these status blocks near the top, immediately after the `# {Phase Title}` heading.
 
-**Completed — no blocking issues:**
+**Completed - no blocking issues:**
 ```markdown
 ## Phase Status
 Status: Completed
@@ -1894,7 +1901,7 @@ Blocking Issues: No
 User Confirmation Required: No
 ```
 
-**Completed — has non-blocking questions:**
+**Completed - has non-blocking questions:**
 ```markdown
 ## Phase Status
 Status: Completed
@@ -1902,7 +1909,7 @@ Blocking Issues: No
 User Confirmation Required: Yes
 ```
 
-**Blocked — has blocking issues:**
+**Blocked - has blocking issues:**
 ```markdown
 ## Phase Status
 Status: Blocked
@@ -1913,15 +1920,15 @@ User Confirmation Required: Yes
 **Phase 4 only:**
 ```markdown
 ## Approval Status
-Status: Approved | Changes required
+Status: Approved | Changes Required
 Blocking Issues: Yes | No
 User Confirmation Required: Yes | No
 ```
 
 **Rules:**
-- If any item has `Required Before Next Phase? = Yes` → `Blocking Issues: Yes`.
-- If any question has `Blocking? = Yes` → `Blocking Issues: Yes`.
-- If `Blocking Issues = Yes` → Review Status in `workflow-status.md` must be `Changes Requested` or `Pending`.
+- If any item has `Required Before Next Phase? = Yes` -> `Blocking Issues: Yes`.
+- If any question has `Blocking? = Yes` -> `Blocking Issues: Yes`.
+- If `Blocking Issues = Yes` -> Review Status in `workflow-status.md` must be `Changes Required` or `Pending`.
 - AI must not proceed to the next phase if `Blocking Issues = Yes`.
 
 ---
@@ -1930,7 +1937,7 @@ User Confirmation Required: Yes | No
 
 AI must maintain `docs/features/{feature-folder}/workflow-status.md` after every phase.
 
-This file is for **phase tracking only** — detailed issues go to `issues.md` and `visual-review-issues.md`.
+This file is for **phase tracking only** - detailed issues go to `issues.md` and `visual-review-issues.md`.
 
 ### Required format
 
@@ -1980,7 +1987,7 @@ Describe exactly what the user should do next.
 
 **Allowed Status values:** `Not Started` / `In Progress` / `Completed` / `Blocked` / `Skipped`
 
-**Allowed Review Status values:** `Pending` / `Approved` / `Changes Requested` / `Not Required`
+**Allowed Review Status values:** `Pending` / `Approved` / `Changes Required` / `Not Required`
 
 **Rules:**
 - AI must read `workflow-status.md` before deciding next phase.
@@ -2062,7 +2069,7 @@ For every feature with `visual_review.enabled: true`, AI must create or update:
 docs/features/{feature-folder}/visual-review-issues.md
 ```
 
-**Purpose:** Track visual mismatch issues found in Phase 9 — separate from general issues.
+**Purpose:** Track visual mismatch issues found in Phase 9 - separate from general issues.
 
 ### Required format
 
@@ -2099,7 +2106,7 @@ docs/features/{feature-folder}/visual-review-issues.md
 
 ## 31. Approval Rule
 
-When user says `approve phase {number}` or `duyệt phase {number}` or `ok phase {number}`:
+When user says `approve phase {number}` or `ok phase {number}`:
 
 AI must:
 1. Read `workflow-status.md`.
@@ -2140,17 +2147,17 @@ Even then, AI must respect all phase gate rules.
 
 ---
 
-## 33. Changes Requested Rule
+## 33. Changes Required Rule
 
-When user says `changes requested phase {number}: {notes}` or `sửa phase {number}: {notes}`:
+When user says `changes requested phase {number}: {notes}`:
 
-1. Update `workflow-status.md` — set Review Status to `Changes Requested`, add notes.
+1. Update `workflow-status.md` - set Review Status to `Changes Required`, add notes.
 2. Add the notes to `Review Notes` section in the phase document.
 3. Check whether the notes resolve or create any items in `issues.md`.
 4. Rework the phase document.
 5. Regenerate the `## Unclear / Incomplete Items` section.
 6. Set Phase Status to `Blocked` if new blocking issues arise, or `Completed` if resolved.
-7. Keep Review Status as `Pending` — never self-approve.
+7. Keep Review Status as `Pending` - never self-approve.
 8. Update `issues.md`.
 9. Stop and wait for user approval.
 
@@ -2158,7 +2165,7 @@ When user says `changes requested phase {number}: {notes}` or `sửa phase {numb
 
 ## 34. Phase-Specific Unclear Item Rules
 
-For each phase, AI must proactively check and mark unclear items for the topics below.
+For each phase, AI must proactively check and mark unclear items for the topics below. Use ID format from Section 26: `P{phase}-Q{n}` for questions, `P{phase}-A{n}` for assumptions, `P{phase}-API{n}` for API issues, etc.
 
 ### Phase 1: Frontend Basic Design
 - Missing UI screenshots
@@ -2245,9 +2252,9 @@ For each phase, AI must proactively check and mark unclear items for the topics 
 ### Phase 9: Frontend Visual Review
 - Actual screenshots not provided by user
 - Screenshot too small or unclear to compare
-- Multiple components look similar — cannot distinguish which was implemented
+- Multiple components look similar - cannot distinguish which was implemented
 - Actual screenshot shows unexpected state (loading, error, empty) rather than populated UI
-- Source UI image and actual implementation show different data — unsure if visual or data issue
+- Source UI image and actual implementation show different data - unsure if visual or data issue
 
 ### Phase 10: Backend Test
 - Unknown test framework setup (xUnit, NUnit)
@@ -2295,7 +2302,7 @@ Use all 13 phases in strict order.
 Run only frontend-related phases:
 - Phase 1: Frontend Basic Design
 - Phase 2: Frontend UI Pixel Analysis (if `visual_review.enabled = true`)
-- Phase 4: Backend API Contract Review (frontend verification mode — verify API contract only, no backend design)
+- Phase 4: Backend API Contract Review (frontend verification mode - verify API contract only, no backend design)
 - Phase 5: Frontend Implementation Plan
 - Phase 8: Frontend Coding
 - Phase 9: Frontend Visual Review (if `visual_review.enabled = true`)
@@ -2320,7 +2327,7 @@ Run only UI phases:
 - Phase 1: Frontend Basic Design
 - Phase 2: Frontend UI Pixel Analysis
 - Phase 5: Frontend Implementation Plan
-- Phase 8: Frontend Coding (with mock data — no real API)
+- Phase 8: Frontend Coding (with mock data - no real API)
 - Phase 9: Frontend Visual Review
 - Phase 11: Frontend Test (light)
 - Phase 13: Final Feature Review
@@ -2329,20 +2336,20 @@ Skip: Phase 3, 4, 6, 7, 10, 12.
 
 ### Mode: `bugfix`
 Do not use the 13-phase workflow. Use a simplified 5-step flow:
-1. Bug Analysis — describe the bug, root cause, affected files
-2. Fix Plan — describe minimal changes needed
-3. Targeted Coding — fix only the affected files
-4. Targeted Test — test only the fixed area
-5. Final Review — confirm fix is clean
+1. Bug Analysis - describe the bug, root cause, affected files
+2. Fix Plan - describe minimal changes needed
+3. Targeted Coding - fix only the affected files
+4. Targeted Test - test only the fixed area
+5. Final Review - confirm fix is clean
 
 Only touch files related to the bug. Do not refactor unrelated code.
 
 ### Mode: `quick_change`
 Use a minimal 4-step flow:
-1. Change Analysis — describe what needs to change
-2. Small Implementation Plan — list affected files only
-3. Coding — implement the change
-4. Smoke Test — verify the change works
+1. Change Analysis - describe what needs to change
+2. Small Implementation Plan - list affected files only
+3. Coding - implement the change
+4. Smoke Test - verify the change works
 
 Use only when user explicitly requests a small change (e.g., "rename this field", "change this label").
 
@@ -2364,9 +2371,9 @@ Read `documentation_level` from `config.yaml`. If missing, default to `standard`
 
 ### Level: `compact`
 - Max 120 lines per phase document.
-- Only include essential tables — omit tables that would have 0 rows.
+- Only include essential tables - omit tables that would have 0 rows.
 - Use bullet points instead of long prose.
-- Do not repeat content from previous phase documents — reference by file path instead.
+- Do not repeat content from previous phase documents - reference by file path instead.
 - Do not generate explanations for self-evident rules.
 
 ### Level: `standard`
@@ -2383,6 +2390,7 @@ Read `documentation_level` from `config.yaml`. If missing, default to `standard`
 - AI must respect `documentation_level` in every phase output.
 - If `cost_optimization.max_doc_lines` is set, that value overrides the level default.
 - If user asks for more detail mid-phase, expand only the requested section.
+- **Priority override:** If `cost_optimization.max_output = concise`, compact response format always applies regardless of `documentation_level` (see Section 22). `documentation_level` controls document structure; `max_output = concise` controls chat response length.
 
 ---
 
@@ -2411,8 +2419,8 @@ cost_optimization:
 **Do not repeat content from previous documents:**
 - Do not copy the full API contract into Phase 5/6/7/8. Reference it: `See 04-api-contract-review.md`.
 - Do not copy the full Backend Design into Phase 6. Reference it.
-- Do not paste full endpoint contracts in test plans — reference the contract file.
-- Do not repeat the full config block in any phase document — reference only the relevant field values.
+- Do not paste full endpoint contracts in test plans - reference the contract file.
+- Do not repeat the full config block in any phase document - reference only the relevant field values.
 
 **Do not duplicate issues across files:**
 - `workflow-status.md` = phase status only.
@@ -2421,11 +2429,11 @@ cost_optimization:
 - Never copy the same issue to multiple files.
 
 **Table row limits:**
-- If a table would exceed `max_table_rows`, show the first N rows and write: `(... {n} more rows — see full document)`.
+- If a table would exceed `max_table_rows`, show the first N rows and write: `(... {n} more rows - see full document)`.
 - Do not generate placeholder rows for items that do not exist.
 
 **Document line limits:**
-- If a phase document would exceed `max_doc_lines`, truncate less-critical sections and add: `(... truncated — see {section} for detail)`.
+- If a phase document would exceed `max_doc_lines`, truncate less-critical sections and add: `(... truncated - see {section} for detail)`.
 - Priority order to keep: status block, required tables, blocking issues, definition of done.
 
 **Chat response:**
@@ -2490,10 +2498,10 @@ Before generating a phase output, AI must read **only the minimum necessary** pr
 
 | Phase | Must read | Must NOT read unless needed |
 |---|---|---|
-| 1 | config.yaml, images/, references/ | — |
-| 2 | config.yaml, 01-frontend-basic-design.md, images/, references/images/ | — |
-| 3 | config.yaml, 01-frontend-basic-design.md, 02-frontend-ui-pixel-analysis.md | — |
-| 4 | 01-frontend-basic-design.md, 02-frontend-ui-pixel-analysis.md, 03-backend-basic-design.md | — |
+| 1 | config.yaml, images/, references/ | - |
+| 2 | config.yaml, 01-frontend-basic-design.md, images/, references/images/ | - |
+| 3 | config.yaml, 01-frontend-basic-design.md, 02-frontend-ui-pixel-analysis.md | - |
+| 4 | 01-frontend-basic-design.md, 02-frontend-ui-pixel-analysis.md, 03-backend-basic-design.md | - |
 | 5 | 01-frontend-basic-design.md, 02-frontend-ui-pixel-analysis.md, 04-api-contract-review.md | 03-backend-basic-design.md |
 | 6 | 03-backend-basic-design.md, 04-api-contract-review.md | 01, 02, 05 |
 | 7 | 03-backend-basic-design.md, 04-api-contract-review.md, 06-backend-implementation-plan.md | 01, 02, 05 |
@@ -2528,7 +2536,7 @@ If the change is minor (e.g., adding one row to a table or updating one field ty
 If `workflow_mode` is missing from `config.yaml`, AI should infer the appropriate mode:
 
 ### Small feature
-- Likely 1–2 files changed.
+- Likely 1-2 files changed.
 - No API or database change.
 - Recommended: `quick_change`
 - Example: rename a label, fix a typo, adjust a color.
@@ -2563,17 +2571,17 @@ Do not ask more than once. If user does not answer, default to `full`.
 
 These rules govern how AI reads and uses `config.yaml`. They exist to minimize token cost across all phases.
 
-### Rule 1 — Config must be compact
+### Rule 1 - Config must be compact
 
 `config.yaml` must contain only feature-specific data values. No comments, no inline documentation, no usage guides. The template is at `.claude/templates/feature-config.template.yaml`.
 
-### Rule 2 — Guide is separate
+### Rule 2 - Guide is separate
 
 Field meanings and usage instructions belong in `.claude/templates/feature-config-guide.md`. AI must NOT read or load the guide unless:
 - The user explicitly asks for a field explanation, OR
 - A config field value is ambiguous and cannot be resolved by workflow defaults.
 
-### Rule 3 — Phase-specific field reading
+### Rule 3 - Phase-specific field reading
 
 AI reads only the config fields relevant to the current phase:
 
@@ -2595,7 +2603,7 @@ AI reads only the config fields relevant to the current phase:
 
 AI must not parse or store unneeded config sections.
 
-### Rule 4 — Missing optional fields
+### Rule 4 - Missing optional fields
 
 If an optional config field is absent:
 1. Apply the workflow default for that field.
@@ -2604,48 +2612,48 @@ If an optional config field is absent:
 
 Do not ask the user about missing optional fields unless they affect correctness.
 
-### Rule 5 — Do not copy config into output
+### Rule 5 - Do not copy config into output
 
 AI must not paste or reproduce the config block (or large portions of it) into any phase output document. Reference specific values inline where needed, e.g.: `entity: Supplier (from config)`.
 
-### Rule 6 — Do not copy guide into output
+### Rule 6 - Do not copy guide into output
 
 AI must not copy content from `feature-config-guide.md` into any phase document, chat response, or issues file.
 
-### Rule 7 — Summarize, do not repeat
+### Rule 7 - Summarize, do not repeat
 
-In a `## Feature Config Summary` section within a phase document, AI must include only the fields relevant to that phase — not the full config. Maximum 10 lines.
+In a `## Feature Config Summary` section within a phase document, AI must include only the fields relevant to that phase - not the full config. Maximum 10 lines.
 
-### Rule 8 — Compact final response
+### Rule 8 - Compact final response
 
 After each phase, the final chat response must use the compact format from Section 22. Do not repeat phase document content in chat unless user explicitly requests it.
 
-### Rule 9 — Delta updates
+### Rule 9 - Delta updates
 
 When a phase document already exists and needs updating (due to changes requested or issue resolution):
 - Do not rewrite the entire document.
 - Update only the affected sections.
 - Summarize changes in one line at the end: `Updated sections: X, Y`.
 
-### Rule 10 — Table row limits
+### Rule 10 - Table row limits
 
 Respect `cost_optimization.max_table_rows` (default 20). When a table exceeds this limit:
 - Show the first N rows.
-- Add: `(... {n} more rows — see full document)`.
+- Add: `(... {n} more rows - see full document)`.
 
-### Rule 11 — Document line limits
+### Rule 11 - Document line limits
 
 Respect `cost_optimization.max_doc_lines` (default 250). When a phase document would exceed this:
 - Truncate lower-priority sections.
 - Keep: status block, required tables, blocking issues, definition of done.
-- Add: `(... section truncated — expand on request)`.
+- Add: `(... section truncated - expand on request)`.
 
-### Rule 12 — Expand on request only
+### Rule 12 - Expand on request only
 
 When a section is truncated or summarized and the user asks for more detail:
 - Expand only that specific section.
 - Do not regenerate the entire document.
 
-### Rule 13 — No guide content in config
+### Rule 13 - No guide content in config
 
-Never add comments, field descriptions, or usage instructions directly inside `config.yaml`. If the config file already has such comments, do not add more and do not flag it as an error — simply ignore them during phase execution.
+Never add comments, field descriptions, or usage instructions directly inside `config.yaml`. If the config file already has such comments, do not add more and do not flag it as an error - simply ignore them during phase execution.

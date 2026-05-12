@@ -86,17 +86,20 @@ Tất cả skill nằm tại `.claude/skills/`. Skill chính:
 
 | File | Mục đích |
 |------|---------|
-| `.claude/skills/fullstack-feature-workflow.md` | Master workflow — 22 sections rules |
-| `.claude/skills/01-frontend-basic-design.md` | Phase 1: UI/UX analysis |
-| `.claude/skills/02-backend-basic-design.md` | Phase 2: Domain + DB design |
-| `.claude/skills/03-backend-api-contract-review.md` | Phase 3: API Contract (source of truth) |
-| `.claude/skills/04-frontend-implementation-plan.md` | Phase 4: Frontend coding plan |
-| `.claude/skills/05-backend-implementation-plan.md` | Phase 5: Backend coding plan |
-| `.claude/skills/06-backend-coding.md` | Phase 6: Backend implementation |
-| `.claude/skills/07-frontend-coding.md` | Phase 7: Frontend implementation |
-| `.claude/skills/08-backend-testing.md` | Phase 8: Backend tests |
-| `.claude/skills/09-frontend-testing.md` | Phase 9: Frontend tests |
-| `.claude/skills/10-integration-testing.md` | Phase 10: Integration tests |
+| `.claude/skills/fullstack-feature-workflow.md` | Master workflow — 42 sections rules |
+| `.claude/skills/01-frontend-basic-design.md` | Phase 1: Frontend Basic Design |
+| `.claude/skills/02-frontend-ui-pixel-analysis.md` | Phase 2: Frontend UI Pixel Analysis |
+| `.claude/skills/03-backend-basic-design.md` | Phase 3: Backend Basic Design |
+| `.claude/skills/04-backend-api-contract-review.md` | Phase 4: Backend API Contract Review |
+| `.claude/skills/05-frontend-implementation-plan.md` | Phase 5: Frontend Implementation Plan |
+| `.claude/skills/06-backend-implementation-plan.md` | Phase 6: Backend Implementation Plan |
+| `.claude/skills/07-backend-coding.md` | Phase 7: Backend Coding |
+| `.claude/skills/08-frontend-coding.md` | Phase 8: Frontend Coding |
+| `.claude/skills/09-frontend-visual-review.md` | Phase 9: Frontend Visual Review |
+| `.claude/skills/10-backend-testing.md` | Phase 10: Backend Test |
+| `.claude/skills/11-frontend-testing.md` | Phase 11: Frontend Test |
+| `.claude/skills/12-integration-testing.md` | Phase 12: Integration Test |
+| `.claude/skills/13-final-feature-review.md` | Phase 13: Final Feature Review |
 
 ### Feature config & input folders
 
@@ -118,7 +121,7 @@ docs/features/{folder}/
 Status: Completed
 ```
 
-Phase 3 (API Contract) dùng:
+Phase 4 (API Contract) dùng:
 
 ```markdown
 ## Approval Status
