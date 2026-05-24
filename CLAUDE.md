@@ -86,7 +86,7 @@ Tất cả skill nằm tại `.claude/skills/`. Skill chính:
 
 | File | Mục đích |
 |------|---------|
-| `.claude/skills/fullstack-feature-workflow.md` | Master workflow — 42 sections rules |
+| `.claude/skills/fullstack-feature-workflow.md` | Master workflow — 43 sections rules |
 | `.claude/skills/01-frontend-basic-design.md` | Phase 1: Frontend Basic Design |
 | `.claude/skills/02-frontend-ui-pixel-analysis.md` | Phase 2: Frontend UI Pixel Analysis |
 | `.claude/skills/03-backend-basic-design.md` | Phase 3: Backend Basic Design |
@@ -100,6 +100,12 @@ Tất cả skill nằm tại `.claude/skills/`. Skill chính:
 | `.claude/skills/11-frontend-testing.md` | Phase 11: Frontend Test |
 | `.claude/skills/12-integration-testing.md` | Phase 12: Integration Test |
 | `.claude/skills/13-final-feature-review.md` | Phase 13: Final Feature Review |
+| `.claude/skills/tdd-enforcement.md` | [P1] TDD Iron Law — xUnit (.NET) + Vitest (React) |
+| `.claude/skills/per-task-code-review.md` | [P1] 2-stage review (spec + quality) sau mỗi task group |
+| `.claude/skills/as-fix.md` | [P2] Bug fix workflow — scope gate + escalation |
+| `.claude/skills/as-ask.md` | [P2] Clarification gathering trước khi implement |
+| `.claude/skills/brainstorming.md` | [P3] Brainstorming feature/approach trước khi workflow |
+| `.claude/skills/workspace-isolation.md` | [P3] Git worktree isolation cho feature branches |
 
 ### Feature config & input folders
 

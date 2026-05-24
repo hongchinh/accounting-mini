@@ -48,6 +48,40 @@ User Confirmation Required: Yes | No
 ## 15. Definition of Done
 ```
 
+## TDD Requirement
+
+Mỗi hook, component, page phải tuân theo TDD cycle trước khi implement:
+
+```
+1. Viết failing test (Vitest + RTL) cho behavior cần implement
+2. Chạy: pnpm test --run src/modules/{feature}/
+3. Verify test FAIL đúng lý do (không phải lỗi import/setup)
+4. Viết minimal code để test PASS
+5. Chạy lại: verify test PASS, các test khác không bị break
+```
+
+**Iron Law:** Không viết production code khi chưa có failing test.
+
+Skill chi tiết: `.claude/skills/tdd-enforcement.md`
+
+## Per-Task Code Review
+
+Sau mỗi task group hoàn thành (TDD cycle xong), chạy 2-stage review:
+
+| Group | Files | Khi nào review |
+|-------|-------|----------------|
+| G1 | Types + Constants + Design tokens | Sau G1 xong |
+| G2 | API service + Query key factory + React Query hooks | Sau G2 xong |
+| G3 | UI Components | Sau G3 xong |
+| G4 | Page + Route + Permission UI + States | Sau G4 xong |
+
+**Stage 1 — Spec Compliance:** Code match Phase 4 + Phase 5 + Phase 2?
+**Stage 2 — Code Quality:** Code follow AccountingMini conventions?
+
+**3-cycle rule:** Sau 3 vòng fix không pass → dừng, escalate user.
+
+Skill chi tiết: `.claude/skills/per-task-code-review.md`
+
 ## Rules
 
 1. Do not start this phase unless the user explicitly confirms frontend coding.
@@ -62,6 +96,8 @@ User Confirmation Required: Yes | No
 10. Include loading, empty, error, and no-permission states.
 11. Record every contract or pixel-spec deviation in the coding summary and `issues.md`.
 12. Run typecheck/lint/build when feasible and record the result.
+13. Follow TDD: write failing test before each implementation unit (see TDD Requirement above).
+14. Run per-task code review (2-stage) after each task group (see Per-Task Code Review above).
 
 ## Completion Checklist
 
@@ -75,6 +111,9 @@ User Confirmation Required: Yes | No
 - [ ] Typecheck/lint/build result is recorded, or reason for not running is documented.
 - [ ] `08-frontend-coding-summary.md` is created.
 - [ ] Required screenshots for visual review are listed.
+- [ ] TDD cycle followed for every hook, component, page (failing test first).
+- [ ] Per-task 2-stage review passed for every task group (G1–G4).
+- [ ] No Critical or Important issues remain open from code review.
 
 ## Final Report Format
 

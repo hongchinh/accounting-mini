@@ -1016,6 +1016,40 @@ AI must read actual project structure before creating files to use the correct n
 13. Migration command
 14. Build / typecheck / test if available
 
+### TDD Enforcement (Phase 7)
+
+Every handler, validator, and endpoint must follow TDD before implementation:
+
+```
+1. Write failing test (xUnit) for the behavior
+2. Run: dotnet test accounting_api/tests/ --filter "{TestClass}"
+3. Verify test FAILS for the right reason
+4. Write minimal code to make it PASS
+5. Verify PASS + no regression in other tests
+```
+
+**Iron Law:** No production code without a failing test first.
+
+Full rules: `.claude/skills/tdd-enforcement.md`
+
+### Per-Task Code Review (Phase 7)
+
+After each task group, run 2-stage review before moving to the next:
+
+| Group | Content | Review when |
+|-------|---------|-------------|
+| G1 | Entity + Enum + EF Config + DbContext | After G1 done |
+| G2 | DTOs + Validators | After G2 done |
+| G3 | Command/Query + Handler | After G3 done |
+| G4 | Endpoint + Permission + DI | After G4 done |
+
+**Stage 1 — Spec Compliance:** Matches Phase 4 + Phase 6?
+**Stage 2 — Code Quality:** Follows AccountingMini conventions?
+
+**3-cycle escalation:** 3 fix cycles without passing → stop, report to user.
+
+Full rules: `.claude/skills/per-task-code-review.md`
+
 ### Backend coding rules
 - Follow Vertical Slice Architecture with MediatR - no IService or IRepository.
 - Do not put business logic in Endpoint.
@@ -1094,6 +1128,40 @@ Required confirmation before starting:
 13. URL query params if needed
 14. Visual review preparation
 15. Typecheck / build / test if available
+
+### TDD Enforcement (Phase 8)
+
+Every hook, component, and page must follow TDD before implementation:
+
+```
+1. Write failing test (Vitest + RTL) for the behavior
+2. Run: pnpm test --run src/modules/{feature}/
+3. Verify test FAILS for the right reason
+4. Write minimal code to make it PASS
+5. Verify PASS + no regression in other tests
+```
+
+**Iron Law:** No production code without a failing test first.
+
+Full rules: `.claude/skills/tdd-enforcement.md`
+
+### Per-Task Code Review (Phase 8)
+
+After each task group, run 2-stage review before moving to the next:
+
+| Group | Content | Review when |
+|-------|---------|-------------|
+| G1 | Types + Constants + Design tokens | After G1 done |
+| G2 | API service + Query key factory + React Query hooks | After G2 done |
+| G3 | UI Components | After G3 done |
+| G4 | Page + Route + Permission UI + States | After G4 done |
+
+**Stage 1 — Spec Compliance:** Matches Phase 4 + Phase 5 + Phase 2?
+**Stage 2 — Code Quality:** Follows AccountingMini conventions?
+
+**3-cycle escalation:** 3 fix cycles without passing → stop, report to user.
+
+Full rules: `.claude/skills/per-task-code-review.md`
 
 ### Frontend coding rules
 - Follow existing frontend architecture.
@@ -2657,3 +2725,54 @@ When a section is truncated or summarized and the user asks for more detail:
 ### Rule 13 - No guide content in config
 
 Never add comments, field descriptions, or usage instructions directly inside `config.yaml`. If the config file already has such comments, do not add more and do not flag it as an error - simply ignore them during phase execution.
+
+---
+
+## 43. Model Selection Guidance
+
+Use the least powerful model that can handle each phase to reduce cost and increase speed.
+
+### By phase
+
+| Phase | Recommended model | Reason |
+|------:|------------------|--------|
+| 1 | `sonnet` | Multi-source analysis (images, markdown, UI comparison) |
+| 2 | `sonnet` | Image reading, design token extraction, measurement estimation |
+| 3 | `sonnet` | Cross-source backend design, domain modeling |
+| 4 | `opus` | API contract review requires high precision and judgment |
+| 5 | `sonnet` | Frontend planning from approved contract |
+| 6 | `sonnet` | Backend planning from approved contract |
+| 7 | `sonnet` + `haiku` | sonnet for judgment tasks; haiku for isolated, well-specified implementations |
+| 8 | `sonnet` + `haiku` | Same split as Phase 7 |
+| 9 | `sonnet` | Visual comparison requires image reading and detailed analysis |
+| 10 | `sonnet` | Test plan + test code with spec cross-reference |
+| 11 | `sonnet` | Test plan + test code with spec cross-reference |
+| 12 | `sonnet` | Integration scenario planning |
+| 13 | `opus` | Final architecture and quality judgment across all phases |
+
+### By task type (within Phase 7 & 8)
+
+| Task type | Model | Example |
+|-----------|-------|---------|
+| Well-specified, isolated (1-2 files) | `haiku` | Write validator for known rules, add DTO field |
+| Multi-file coordination | `sonnet` | Handler + endpoint + DI wiring |
+| Design judgment, cross-reference | `sonnet` | Verify code matches Phase 4 contract |
+| Spec compliance review | `sonnet` | 2-stage review Stage 1 |
+| Code quality review | `haiku` or `sonnet` | 2-stage review Stage 2 |
+| Root cause analysis | `sonnet` | Debugging unexpected behavior |
+| Escalation assessment | `opus` | 3-cycle escalation root cause |
+
+### By review type
+
+| Review | Model |
+|--------|-------|
+| Stage 1: Spec Compliance | `sonnet` (needs multi-doc context) |
+| Stage 2: Code Quality | `haiku` for mechanical checks; `sonnet` if nuanced |
+| Final Feature Review (Phase 13) | `opus` |
+
+### Rules
+
+- Never use `opus` for mechanical implementation tasks — it is cost-inefficient.
+- Never use `haiku` for multi-source analysis phases (1, 2, 3, 4, 9, 13).
+- When in doubt about model, use `sonnet`.
+- Model selection applies per-task, not per-phase. A phase may use multiple models across its task groups.
