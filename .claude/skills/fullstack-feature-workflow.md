@@ -473,6 +473,32 @@ User Confirmation Required: Yes | No
 - `Backend Only`
 - `Frontend Only`
 
+### Visual Companion (tùy chọn) — Phase 1
+
+Khi Phase 1 cần **trình bày lựa chọn thiết kế** cho user (layout, navigation structure,
+screen composition), dùng Visual Companion thay vì mô tả bằng chữ.
+
+Xem: `.claude/skills/brainstorming/visual-companion.md`
+
+**Dùng browser khi:**
+- Có ≥ 2 layout options cho màn hình chính (list / detail / modal)
+- So sánh side-by-side giữa Current UI và Reference UI
+- Trình bày wireframe cho Section 10 (Screen Layout) hoặc Section 11 (Component Design)
+- Có câu hỏi về spatial arrangement mà chữ khó diễn đạt
+
+**Không dùng browser cho:**
+- Feature Comparison Matrix — dùng table trong terminal
+- Gap Analysis — text là đủ
+- Validation rules, permission rules — text là đủ
+
+**Quick start:**
+```
+# Windows — Bash tool với run_in_background: true
+node scripts/brainstorm-server.js --project-dir <project-root>
+
+# Sau đó đọc state_dir/server-info để lấy URL và screen_dir
+```
+
 ### Phase 1 restrictions
 - Do not create any code in `accounting_web/`.
 - Do not create any code in `accounting_api/`.
@@ -1354,6 +1380,30 @@ Status values: `Pass` / `Fail` / `Partial` / `Not Applicable`
 - If any High issue exists -> `Changes Required`.
 - If only Medium/Low issues exist -> `Approved with minor issues`.
 - If no issues or only acceptable Low issues -> `Approved`.
+
+### Visual Companion (tùy chọn) — Phase 9
+
+Phase 9 là phase visual nhất trong workflow. Visual Companion **rất phù hợp** ở đây để
+trình bày kết quả so sánh source vs actual cho user duyệt.
+
+Xem: `.claude/skills/brainstorming/visual-companion.md`
+
+**Dùng browser khi:**
+- Trình bày Section 2 (Visual Comparison Summary) với side-by-side mockup
+- Liệt kê mismatches theo severity (Critical / High / Medium / Low) dưới dạng visual cards
+- Hiển thị Section 5 (Component-level Fix Plan) dưới dạng actionable checklist
+- User cần approve / reject visually — browser dễ thao tác hơn terminal
+
+**Workflow cho Phase 9:**
+1. Khởi động server → bảo user mở URL
+2. Viết `comparison.html` — split view: source (left) vs actual (right) cho mỗi area
+3. Viết `mismatches.html` — danh sách issues grouped theo severity với `data-choice`
+4. User click approve hoặc flag issues cần fix
+5. Đọc `state_dir/events` → merge với terminal input → ghi `09-frontend-visual-review.md`
+
+**Không dùng browser cho:**
+- Blockers về missing screenshot — thông báo trong terminal, rõ ràng hơn
+- Section 6 Approval Decision — yêu cầu text confirm từ user
 
 ### Phase 9 restrictions
 

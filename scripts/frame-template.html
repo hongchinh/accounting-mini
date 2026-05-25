@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Brainstorm — AccountingMini</title>
+<style>
+/* ── Reset ──────────────────────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+/* ── Base ───────────────────────────────────────────────────────────────── */
+:root {
+  --bg:         #0f172a;
+  --surface:    #1e293b;
+  --surface2:   #334155;
+  --border:     #475569;
+  --text:       #e2e8f0;
+  --muted:      #94a3b8;
+  --accent:     #3b82f6;
+  --accent-dim: #1d4ed8;
+  --success:    #22c55e;
+  --danger:     #ef4444;
+  --radius:     8px;
+  --radius-lg:  12px;
+}
+
+html, body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
+  font-size: 15px;
+  line-height: 1.6;
+  min-height: 100vh;
+}
+
+/* ── Layout ─────────────────────────────────────────────────────────────── */
+.frame {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 2rem 1.5rem 5rem;
+}
+
+/* ── Typography ─────────────────────────────────────────────────────────── */
+h2 {
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 0.5rem;
+  line-height: 1.3;
+}
+
+h3 {
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 0.3rem;
+}
+
+h4 {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-bottom: 0.5rem;
+}
+
+p { color: var(--muted); }
+
+.subtitle {
+  font-size: 1rem;
+  color: var(--muted);
+  margin-bottom: 1.75rem;
+}
+
+.label {
+  display: inline-block;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+  margin-bottom: 0.5rem;
+}
+
+.section {
+  margin-bottom: 2rem;
+}
+
+/* ── Options (A/B/C) ────────────────────────────────────────────────────── */
+.options {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.option {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  padding: 1rem 1.25rem;
+  background: var(--surface);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-lg);
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s;
+  user-select: none;
+}
+
+.option:hover {
+  border-color: var(--accent);
+  background: #1e2d45;
+}
+
+.option.selected {
+  border-color: var(--accent);
+  background: #1e2d45;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.25);
+}
+
+.option .letter {
+  flex-shrink: 0;
+  width: 2rem;
+  height: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--surface2);
+  border-radius: 6px;
+  font-weight: 700;
+  font-size: 0.9rem;
+  color: var(--accent);
+  transition: background 0.15s;
+}
+
+.option.selected .letter {
+  background: var(--accent);
+  color: #fff;
+}
+
+.option .content { flex: 1; min-width: 0; }
+.option .content p { margin-top: 0.25rem; font-size: 0.9rem; }
+
+/* ── Cards (visual designs) ─────────────────────────────────────────────── */
+.cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 1rem;
+}
+
+.card {
+  background: var(--surface);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  cursor: pointer;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.card:hover { border-color: var(--accent); }
+
+.card.selected {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.25);
+}
+
+.card-image {
+  background: var(--surface2);
+  min-height: 140px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--muted);
+  font-size: 0.85rem;
+  padding: 1rem;
+}
+
+.card-body { padding: 1rem; }
+.card-body h3 { margin-bottom: 0.25rem; }
+.card-body p  { font-size: 0.875rem; }
+
+/* ── Mockup container ───────────────────────────────────────────────────── */
+.mockup {
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+
+.mockup-header {
+  background: var(--surface2);
+  padding: 0.6rem 1rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--muted);
+  letter-spacing: 0.04em;
+  border-bottom: 1px solid var(--border);
+}
+
+.mockup-body {
+  background: var(--surface);
+  padding: 1.25rem;
+}
+
+/* ── Split view ─────────────────────────────────────────────────────────── */
+.split {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+@media (max-width: 640px) {
+  .split { grid-template-columns: 1fr; }
+}
+
+/* ── Pros / Cons ────────────────────────────────────────────────────────── */
+.pros-cons {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.pros, .cons {
+  padding: 1rem;
+  border-radius: var(--radius);
+}
+
+.pros {
+  background: rgba(34, 197, 94, 0.08);
+  border: 1px solid rgba(34, 197, 94, 0.25);
+}
+
+.cons {
+  background: rgba(239, 68, 68, 0.08);
+  border: 1px solid rgba(239, 68, 68, 0.25);
+}
+
+.pros h4 { color: var(--success); }
+.cons h4 { color: var(--danger); }
+
+.pros ul, .cons ul {
+  list-style: none;
+  margin-top: 0.5rem;
+}
+
+.pros li::before { content: '✓ '; color: var(--success); font-weight: 700; }
+.cons li::before { content: '✗ '; color: var(--danger); font-weight: 700; }
+.pros li, .cons li { font-size: 0.9rem; margin-bottom: 0.3rem; }
+
+/* ── Mock wireframe elements ────────────────────────────────────────────── */
+.mock-nav {
+  background: var(--surface2);
+  border-bottom: 1px solid var(--border);
+  padding: 0.75rem 1rem;
+  font-size: 0.85rem;
+  color: var(--muted);
+  display: flex;
+  gap: 1.5rem;
+  align-items: center;
+}
+
+.mock-sidebar {
+  width: 200px;
+  min-height: 200px;
+  background: var(--surface2);
+  border-right: 1px solid var(--border);
+  padding: 1rem;
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
+.mock-content {
+  flex: 1;
+  padding: 1rem;
+  background: var(--surface);
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
+.mock-button {
+  display: inline-block;
+  padding: 0.45rem 1rem;
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.mock-input {
+  display: block;
+  width: 100%;
+  padding: 0.45rem 0.75rem;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--text);
+  font-size: 0.875rem;
+}
+
+.mock-input::placeholder { color: var(--muted); }
+
+.placeholder {
+  background: var(--surface2);
+  border: 1.5px dashed var(--border);
+  border-radius: var(--radius);
+  padding: 1.5rem;
+  text-align: center;
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
+/* ── Table ──────────────────────────────────────────────────────────────── */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+}
+
+th, td {
+  padding: 0.6rem 0.9rem;
+  text-align: left;
+  border-bottom: 1px solid var(--border);
+}
+
+th {
+  color: var(--muted);
+  font-weight: 600;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* ── Selection indicator bar ────────────────────────────────────────────── */
+#bs-indicator {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: var(--accent);
+  color: #fff;
+  text-align: center;
+  padding: 0.65rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  display: none;
+  z-index: 999;
+}
+</style>
+</head>
+<body>
+<div class="frame">
+{{CONTENT}}
+</div>
+<div id="bs-indicator"></div>
+<script>
+{{HELPER}}
+</script>
+</body>
+</html>

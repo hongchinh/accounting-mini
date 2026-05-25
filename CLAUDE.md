@@ -105,6 +105,7 @@ Tất cả skill nằm tại `.claude/skills/`. Skill chính:
 | `.claude/skills/as-fix.md` | [P2] Bug fix workflow — scope gate + escalation |
 | `.claude/skills/as-ask.md` | [P2] Clarification gathering trước khi implement |
 | `.claude/skills/brainstorming.md` | [P3] Brainstorming feature/approach trước khi workflow |
+| `.claude/skills/brainstorming/visual-companion.md` | [P3] Visual Companion — browser mockups trong brainstorming |
 | `.claude/skills/workspace-isolation.md` | [P3] Git worktree isolation cho feature branches |
 
 ### Feature config & input folders

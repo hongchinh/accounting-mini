@@ -1,4 +1,4 @@
-# Skill 01 — Frontend Basic Design
+# Skill 01 - Frontend Basic Design
 
 ## Role
 
@@ -6,7 +6,7 @@ Senior React Frontend Architect, UI/UX Analyst, Senior Business Analyst.
 
 ## Goal
 
-Tạo tài liệu thiết kế cơ bản frontend trước khi code. Phân tích đầy đủ các nguồn input (UI hiện tại, UI tham khảo, tài liệu nghiệp vụ), so sánh tính năng, xác định gap, và tạo thiết kế UI/UX cùng frontend model. Không code ở phase này.
+Create the frontend basic design document before coding. Analyze all input sources, including current UI, reference UI, and business documentation. Compare features, identify gaps, and produce the UI/UX design and frontend model. Do not write code in this phase.
 
 ---
 
@@ -14,19 +14,19 @@ Tạo tài liệu thiết kế cơ bản frontend trước khi code. Phân tích
 
 | Source | Path | Purpose |
 |--------|------|---------|
-| Current UI images | `docs/features/{feature-name}/images/` | UI hiện tại cần implement |
-| Reference UI images | `docs/features/{feature-name}/references/images/` | UI tham khảo (MISA, KiotViet...) |
-| Reference markdown docs | `docs/features/{feature-name}/references/markdown/` | Hướng dẫn nghiệp vụ tham khảo |
-| Business requirements | Mô tả từ người dùng | Chức năng cần implement |
-| Tech stack info | Mô tả từ người dùng | React, TypeScript, Vite, TailwindCSS... |
+| Current UI images | `docs/features/{feature-name}/images/` | Current UI to implement |
+| Reference UI images | `docs/features/{feature-name}/references/images/` | Reference UI, such as MISA, KiotViet, or similar systems |
+| Reference markdown docs | `docs/features/{feature-name}/references/markdown/` | Reference business guides and product documentation |
+| Business requirements | Description from the user | Features to implement |
+| Tech stack info | Description from the user | React, TypeScript, Vite, TailwindCSS, or the actual project stack |
 
-**Nếu thiếu nguồn nào:** Vẫn tiếp tục, nhưng phải ghi rõ trạng thái Missing trong phần Input Analysis.
+**If any source is missing:** Continue the phase, but clearly record the missing source and its impact in Input Analysis.
 
 ---
 
 ## Output
 
-```
+```text
 docs/features/{feature-name}/01-frontend-basic-design.md
 ```
 
@@ -39,23 +39,23 @@ docs/features/{feature-name}/01-frontend-basic-design.md
 
 ---
 
-# PART A — INPUT ANALYSIS
+# PART A - INPUT ANALYSIS
 
 ## A1. Input Sources
 
 | Source | Path | Purpose | Status |
 |--------|------|---------|--------|
-| Current UI images | docs/features/{feature-name}/images/ | UI hiện tại cần implement | Found / Missing |
-| Reference UI images | docs/features/{feature-name}/references/images/ | UI tham khảo | Found / Missing |
-| Reference markdown docs | docs/features/{feature-name}/references/markdown/ | Hướng dẫn nghiệp vụ | Found / Missing |
+| Current UI images | docs/features/{feature-name}/images/ | Current UI to implement | Found / Missing |
+| Reference UI images | docs/features/{feature-name}/references/images/ | Reference UI | Found / Missing |
+| Reference markdown docs | docs/features/{feature-name}/references/markdown/ | Business reference guides | Found / Missing |
 
-**Missing Inputs:** (Liệt kê nguồn thiếu và tác động)
+**Missing Inputs:** List missing sources and their impact.
 
 ---
 
 ## A2. Current UI Analysis
 
-> Phân tích từng ảnh trong `docs/features/{feature-name}/images/`
+> Analyze each image in `docs/features/{feature-name}/images/`.
 
 ### A2.1 Screens Identified
 
@@ -75,23 +75,23 @@ docs/features/{feature-name}/01-frontend-basic-design.md
 ### A2.4 Unclear Points from Current UI
 
 | Item | Screenshot | Why Unclear |
-|------|-----------|-------------|
+|------|------------|-------------|
 
 ---
 
 ## A3. Reference UI Analysis
 
-> Phân tích từng ảnh trong `docs/features/{feature-name}/references/images/`
+> Analyze each image in `docs/features/{feature-name}/references/images/`.
 
 ### A3.1 Reference Screens Identified
 
 | Screen | File | Source System | Description |
-|--------|------|--------------|-------------|
+|--------|------|---------------|-------------|
 
 ### A3.2 Layout Analysis
 
 | Reference Screen | UI Area | Observed Elements | Suggested Usage |
-|-----------------|---------|-------------------|----------------|
+|------------------|---------|-------------------|-----------------|
 
 ### A3.3 Reference Feature Inventory
 
@@ -101,13 +101,13 @@ docs/features/{feature-name}/01-frontend-basic-design.md
 ### A3.4 UX Patterns Worth Adopting
 
 | Pattern | Reference Source | Description | Recommendation |
-|---------|-----------------|-------------|---------------|
+|---------|------------------|-------------|----------------|
 
 ---
 
 ## A4. Reference Markdown Analysis
 
-> Phân tích từng file trong `docs/features/{feature-name}/references/markdown/`
+> Analyze each file in `docs/features/{feature-name}/references/markdown/`.
 
 ### A4.1 Documents Processed
 
@@ -117,17 +117,17 @@ docs/features/{feature-name}/01-frontend-basic-design.md
 ### A4.2 Business Capabilities Extracted
 
 | Capability | Source Document | Description | Impact on Design |
-|------------|----------------|-------------|-----------------|
+|------------|-----------------|-------------|------------------|
 
 ### A4.3 Business Rules Extracted
 
 | Rule | Source | Description | Impact on Design |
-|------|--------|-------------|-----------------|
+|------|--------|-------------|------------------|
 
 ### A4.4 Validation Rules Extracted
 
 | Field / Action | Rule | Source | Impact |
-|---------------|------|--------|--------|
+|----------------|------|--------|--------|
 
 ### A4.5 User Flows Extracted
 
@@ -137,33 +137,33 @@ docs/features/{feature-name}/01-frontend-basic-design.md
 ### A4.6 Terminology Glossary
 
 | Term | Definition | Source |
-|------|-----------|--------|
+|------|------------|--------|
 
 ---
 
 ## A5. Feature Comparison Matrix
 
-> So sánh tính năng giữa 3 nguồn: Current UI / Reference UI / Reference Markdown
+> Compare features across three sources: Current UI / Reference UI / Reference Markdown.
 
 | Feature / Capability | Current UI | Reference UI | Reference Markdown | Status | Decision |
-|----------------------|-----------|-------------|-------------------|--------|----------|
+|----------------------|------------|--------------|--------------------|--------|----------|
 
 **Status values:**
-- `Matched` — có trong cả 3 nguồn
-- `Missing in Current UI` — có trong reference nhưng chưa thấy trong current UI
-- `Missing in Reference UI` — có trong current UI nhưng không thấy trong reference
-- `Mentioned in Docs Only` — chỉ có trong markdown, không thấy trên UI nào
-- `UI Only` — chỉ thấy trên UI, không đề cập trong docs
-- `Conflict` — các nguồn mâu thuẫn nhau
-- `Unclear` — không đủ thông tin để xác định
+- `Matched` - present in all three sources
+- `Missing in Current UI` - present in references but not visible in the current UI
+- `Missing in Reference UI` - present in the current UI but not visible in references
+- `Mentioned in Docs Only` - present only in markdown, not visible in any UI
+- `UI Only` - visible only in UI, not mentioned in docs
+- `Conflict` - sources contradict each other
+- `Unclear` - not enough information to decide
 
 **Decision values:**
-- `Implement` — sẽ implement
-- `Do Not Implement` — loại khỏi scope
-- `Need Confirmation` — cần xác nhận với người dùng
-- `Defer` — defer sang phase sau
-- `Backend Only` — chỉ cần backend, không cần frontend
-- `Frontend Only` — chỉ cần frontend, không cần backend API
+- `Implement` - implement it
+- `Do Not Implement` - exclude it from scope
+- `Need Confirmation` - requires user confirmation
+- `Defer` - defer to a later phase
+- `Backend Only` - backend only, no frontend UI needed
+- `Frontend Only` - frontend only, no backend API needed
 
 ---
 
@@ -171,28 +171,28 @@ docs/features/{feature-name}/01-frontend-basic-design.md
 
 ### A6.1 Missing Features
 
-> Tính năng có trong reference nhưng chưa thấy trong current UI
+> Features present in references but not visible in the current UI.
 
 | Feature | Found In | Missing From | Impact | Recommendation |
-|---------|----------|-------------|--------|---------------|
+|---------|----------|--------------|--------|----------------|
 
 ### A6.2 Extra Features
 
-> Tính năng có trong current UI nhưng không thấy trong reference
+> Features present in the current UI but not visible in references.
 
 | Feature | Found In | Not Found In | Risk | Recommendation |
-|---------|----------|-------------|------|---------------|
+|---------|----------|--------------|------|----------------|
 
 ### A6.3 Conflicting Features
 
-> Điểm mâu thuẫn giữa các nguồn
+> Contradictions between sources.
 
 | Topic | Current UI | Reference UI | Reference Markdown | Conflict | Proposed Resolution |
-|-------|-----------|-------------|-------------------|----------|---------------------|
+|-------|------------|--------------|--------------------|----------|---------------------|
 
-### A6.4 Unclear Items — Open Questions
+### A6.4 Unclear Items - Open Questions
 
-> Điểm không đủ thông tin, cần hỏi lại người dùng
+> Items that do not have enough information and require user confirmation.
 
 | # | Question | Context | Options | Recommended Default |
 |---|----------|---------|---------|---------------------|
@@ -201,7 +201,7 @@ docs/features/{feature-name}/01-frontend-basic-design.md
 
 ## A7. Confirmed Frontend Scope
 
-> Phạm vi frontend được xác nhận sau phân tích
+> Frontend scope confirmed after analysis.
 
 | Feature | Include? | Reason | Source |
 |---------|----------|--------|--------|
@@ -212,10 +212,10 @@ docs/features/{feature-name}/01-frontend-basic-design.md
 
 ## A8. Updated Frontend API Needs
 
-> API needs suy ra từ toàn bộ input sources — không chỉ từ current UI
+> API needs inferred from all input sources, not only from the current UI.
 
 | UI Action | Required By | Method Draft | Endpoint Draft | Request | Response | Notes |
-|-----------|------------|-------------|---------------|---------|----------|-------|
+|-----------|-------------|--------------|----------------|---------|----------|-------|
 
 **Required By values:** `Current UI` / `Reference UI` / `Reference Markdown` / `Business Rule` / `Derived`
 
@@ -230,7 +230,7 @@ docs/features/{feature-name}/01-frontend-basic-design.md
 
 ---
 
-# PART B — FRONTEND DESIGN
+# PART B - FRONTEND DESIGN
 
 ## 1. Overview
 ### 1.1 Purpose
@@ -242,37 +242,37 @@ docs/features/{feature-name}/01-frontend-basic-design.md
 
 ## 2. Screen Layout
 ### 2.1 Page Structure
-(Mô tả layout tổng thể: header, breadcrumb, toolbar, filter, grid, pagination, dialogs)
+Describe the overall layout: header, breadcrumb, toolbar, filter, grid, pagination, and dialogs.
 
 ### 2.2 Toolbar Area
-(Các button hành động: Add, Edit, Delete, Export, Bulk actions)
+Action buttons: Add, Edit, Delete, Export, and bulk actions.
 
 ### 2.3 Filter Area
-(Các ô tìm kiếm, dropdown filter, date range)
+Search boxes, dropdown filters, date range filters, and similar controls.
 
 ### 2.4 Data Grid / Table
-(Danh sách cột, sortable columns, action columns, row selection)
+Column list, sortable columns, action columns, row selection, and grid behavior.
 
 ### 2.5 Summary Cards
-(Thống kê tổng quan nếu có: tổng số, tổng tiền, số active...)
+Overview metrics if available, such as total count, total amount, or active count.
 
 ### 2.6 Detail / Form Dialog
-(Popup hoặc drawer cho thêm mới / cập nhật / xem chi tiết)
+Popup or drawer behavior for create, update, and detail view.
 
 ### 2.7 Pagination
-(Strategy: server-side hay client-side, page size options)
+Strategy: server-side or client-side, page size options, and pagination controls.
 
 ### 2.8 Notifications / Toast
-(Success, error, warning messages)
+Success, error, and warning messages.
 
 ---
 
 ## 3. Component Design
 ### 3.1 Component Tree
-(Cây component từ Page xuống các leaf components)
+Component hierarchy from the page component to leaf components.
 
 ### 3.2 Component Responsibilities
-(Mỗi component làm gì, nhận props gì, emit events gì)
+What each component does, what props it receives, and what events it emits.
 
 ### 3.3 Props & Events
 | Component | Props | Events |
@@ -291,19 +291,19 @@ docs/features/{feature-name}/01-frontend-basic-design.md
 
 ---
 
-## 5. Frontend API Needs (Final — from A8)
+## 5. Frontend API Needs (Final - from A8)
 
-> Tổng hợp từ A8 — đây là expectation của frontend, chưa phải contract cuối cùng
+> Summary from A8. This is the frontend expectation, not the final API contract.
 
 | UI Action | Required By | Method | Endpoint (expected) | Request | Response |
-|-----------|------------|--------|---------------------|---------|----------|
+|-----------|-------------|--------|---------------------|---------|----------|
 
 ---
 
 ## 6. State Management
 ### 6.1 URL / Query State
 - keyword
-- filters (status, group, date range...)
+- filters, such as status, group, date range
 - pageIndex
 - pageSize
 - sortBy
@@ -313,11 +313,11 @@ docs/features/{feature-name}/01-frontend-basic-design.md
 - selectedRows
 - loading
 - error
-- modalOpen (add/edit/detail/delete confirm)
+- modalOpen, such as add/edit/detail/delete confirm
 - activeTab
 
 ### 6.3 Server State (React Query)
-- listQuery (paged data)
+- listQuery for paged data
 - detailQuery
 - summaryQuery
 
@@ -342,7 +342,7 @@ docs/features/{feature-name}/01-frontend-basic-design.md
 ### 7.10 Delete Bulk
 ### 7.11 Export
 ### 7.12 View Detail
-(Mô tả flow từng interaction)
+Describe each interaction flow.
 
 ---
 
@@ -359,10 +359,10 @@ docs/features/{feature-name}/01-frontend-basic-design.md
 ---
 
 ## 10. Multi-tenant Rules
-- tenantId lấy từ tenant context (không hard-code)
-- React Query key chứa tenantId
-- Reload data khi đổi tenant
-- Không lưu tenantId vào localStorage dạng hard-code
+- Read tenantId from tenant context. Do not hard-code it.
+- React Query keys must include tenantId.
+- Reload data when the tenant changes.
+- Do not store tenantId as a hard-coded localStorage value.
 
 ---
 
@@ -388,7 +388,7 @@ docs/features/{feature-name}/01-frontend-basic-design.md
 ---
 
 ## 14. Open Questions
-(Tổng hợp từ A6.4 — các câu hỏi cần xác nhận trước khi chuyển sang Phase 2)
+Summary from A6.4: questions that must be confirmed before moving to Phase 2.
 
 | # | Question | Context | Options | Recommended Default | Must Resolve Before Phase 2? |
 |---|----------|---------|---------|---------------------|------------------------------|
@@ -398,20 +398,20 @@ docs/features/{feature-name}/01-frontend-basic-design.md
 
 ## Rules
 
-1. **Không code ở phase này.**
-2. **Không tạo file trong `accounting_web/` ở phase này.**
-3. Chỉ tạo file tài liệu tại `docs/features/{feature-name}/01-frontend-basic-design.md`.
-4. **Phải phân tích tất cả file ảnh trong `docs/features/{feature-name}/images/` nếu có.**
-5. **Phải phân tích tất cả file ảnh trong `docs/features/{feature-name}/references/images/` nếu có.**
-6. **Phải phân tích tất cả file markdown trong `docs/features/{feature-name}/references/markdown/` nếu có.**
-7. **Không được bỏ qua phần Feature Comparison Matrix (A5).**
-8. **Không được bỏ qua phần Gap Analysis (A6).**
-9. **Không được tự ý implement tính năng có status `Conflict` hoặc `Unclear`** — phải đưa vào Need Confirmation.
-10. Nếu markdown và ảnh mâu thuẫn → ưu tiên đưa vào `Need Confirmation`.
-11. Nếu reference UI có tính năng nhưng current UI không có → không mặc định implement; đánh dấu `Missing in Current UI` và đề xuất.
-12. TypeScript model ở section 4 là expectation — có thể thay đổi sau API Contract Review.
-13. Luôn viết section Multi-tenant và Permission dù feature có vẻ đơn giản.
-14. Validation rules phải liệt kê cả client-side validation (không chờ server).
+1. Do not write code in this phase.
+2. Do not create files inside `accounting_web/` in this phase.
+3. Only create the design document at `docs/features/{feature-name}/01-frontend-basic-design.md`.
+4. Analyze all image files in `docs/features/{feature-name}/images/` if present.
+5. Analyze all image files in `docs/features/{feature-name}/references/images/` if present.
+6. Analyze all markdown files in `docs/features/{feature-name}/references/markdown/` if present.
+7. Do not skip the Feature Comparison Matrix (A5).
+8. Do not skip Gap Analysis (A6).
+9. Do not independently implement features with status `Conflict` or `Unclear`; mark them as `Need Confirmation`.
+10. If markdown and images conflict, prefer `Need Confirmation`.
+11. If the reference UI has a feature that the current UI does not have, do not implement it by default. Mark it as `Missing in Current UI` and provide a recommendation.
+12. The TypeScript model in Section 4 is an expectation and may change after API Contract Review.
+13. Always write Multi-tenant and Permission sections, even for simple features.
+14. Validation rules must include client-side validation. Do not wait for the server to define every validation rule.
 
 ---
 
@@ -421,45 +421,45 @@ docs/features/{feature-name}/01-frontend-basic-design.md
 |--------|------|
 | Design document | `docs/features/{feature-name}/01-frontend-basic-design.md` |
 
-**CẤMTẠO:** Không tạo bất kỳ file nào trong `accounting_web/` ở phase này.
+**Do not create any file inside `accounting_web/` in this phase.**
 
 ---
 
-## Checklist Trước Khi Hoàn Thành
+## Completion Checklist
 
-**Part A — Input Analysis:**
-- [ ] A1: Input sources đã liệt kê, trạng thái Found/Missing đã ghi
-- [ ] A2: Đã phân tích tất cả ảnh trong `images/` — layout, elements, unclear points
-- [ ] A3: Đã phân tích tất cả ảnh trong `references/images/` — layout, patterns
-- [ ] A4: Đã phân tích tất cả markdown trong `references/markdown/` — rules, flows, glossary
-- [ ] A5: Feature Comparison Matrix đã đầy đủ với đúng Status và Decision values
-- [ ] A6: Gap Analysis đã có Missing, Extra, Conflict, Unclear sections
-- [ ] A7: Confirmed Frontend Scope đã có
-- [ ] A8: Updated Frontend API Needs đã suy ra từ toàn bộ sources
-- [ ] A9: Decision Log đã có
+**Part A - Input Analysis:**
+- [ ] A1: Input sources are listed and Found/Missing status is recorded.
+- [ ] A2: All images in `images/` are analyzed for layout, elements, and unclear points.
+- [ ] A3: All images in `references/images/` are analyzed for layout and patterns.
+- [ ] A4: All markdown files in `references/markdown/` are analyzed for rules, flows, and glossary.
+- [ ] A5: Feature Comparison Matrix is complete with valid Status and Decision values.
+- [ ] A6: Gap Analysis includes Missing, Extra, Conflict, and Unclear sections.
+- [ ] A7: Confirmed Frontend Scope is complete.
+- [ ] A8: Updated Frontend API Needs are inferred from all sources.
+- [ ] A9: Decision Log is complete.
 
-**Part B — Frontend Design:**
-- [ ] Section 1: Overview đã đủ purpose, business context, target users
-- [ ] Section 2: Layout đã mô tả đầy đủ toolbar, filter, grid, pagination, dialogs
-- [ ] Section 3: Component tree và responsibilities đã rõ ràng
-- [ ] Section 4: TypeScript model đã có đủ các type cần thiết
-- [ ] Section 5: API needs tổng hợp từ A8
-- [ ] Section 6: State management đã cover URL state, UI state, server state, permission state
-- [ ] Section 7: User interaction đã mô tả đủ mọi flow
-- [ ] Section 8: Validation rules đã liệt kê đủ (với source)
-- [ ] Section 9: Permission rules đã map với từng action
-- [ ] Section 10: Multi-tenant rules đã có
-- [ ] Section 11: Loading/empty/error states đã có
-- [ ] Section 13: Acceptance criteria đã có
-- [ ] Section 14: Open Questions tổng hợp đầy đủ (với Must Resolve Before Phase 2)
-- [ ] Không có code snippet thực tế
+**Part B - Frontend Design:**
+- [ ] Section 1: Overview includes purpose, business context, and target users.
+- [ ] Section 2: Layout fully describes toolbar, filter, grid, pagination, and dialogs.
+- [ ] Section 3: Component tree and responsibilities are clear.
+- [ ] Section 4: TypeScript model includes all required types.
+- [ ] Section 5: API needs summarize A8.
+- [ ] Section 6: State management covers URL state, UI state, server state, and permission state.
+- [ ] Section 7: User interactions describe all flows.
+- [ ] Section 8: Validation rules are listed with sources.
+- [ ] Section 9: Permission rules are mapped to each action.
+- [ ] Section 10: Multi-tenant rules are included.
+- [ ] Section 11: Loading, empty, and error states are included.
+- [ ] Section 13: Acceptance criteria are included.
+- [ ] Section 14: Open Questions are fully summarized with `Must Resolve Before Phase 2`.
+- [ ] No actual implementation code snippets are included.
 
 ---
 
 ## Final Report Format
 
-```
-## Phase 1 Complete — Frontend Basic Design
+```markdown
+## Phase 1 Complete - Frontend Basic Design
 
 **Feature:** {feature-name}
 **Document:** docs/features/{feature-name}/01-frontend-basic-design.md
@@ -493,6 +493,6 @@ docs/features/{feature-name}/01-frontend-basic-design.md
 **Open Questions (Can Proceed):**
 1. ...
 
-**Next Step:** Phase 2 — Backend Basic Design
-Use skill: .ai/skills/02-backend-basic-design.md
+**Next Step:** Phase 2 - Frontend UI Pixel Analysis
+Use skill: .claude/skills/02-frontend-ui-pixel-analysis.md
 ```
