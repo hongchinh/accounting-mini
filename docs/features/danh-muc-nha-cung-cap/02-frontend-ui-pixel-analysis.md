@@ -5,226 +5,238 @@ Status: Completed
 Blocking Issues: No
 User Confirmation Required: No
 
----
-
 ## 1. Feature Config Summary
-- feature: `danh-muc-nha-cung-cap` | visual_review: `strict` | level: `standard`
-- Sources: 1 current UI image + 8 reference UI images | No actual AccountingMini screenshots yet
-- Note: Current UI image = MISA reference screenshot (no AccountingMini-specific design exists)
+
+| Field | Value |
+|---|---|
+| Feature | danh-muc-nha-cung-cap |
+| Name VI | Danh mục nhà cung cấp |
+| Table library | AG Grid |
+| Visual review | Strict |
+| Cost mode | Concise |
 
 ## 2. Screenshot Inventory
 
 | Image | Type | Purpose | Notes |
 |---|---|---|---|
-| images/danhmuc_nhacungcap_list.png | Current UI | Main list page (main source) | MISA app, same content as ref below |
-| references/images/danhmuc_nhacungcap_list.png | Reference UI | Full MISA app with sidebar + full toolbar | Same screen, higher fidelity view |
-| references/images/danhmuc_nhacungcap_list_menu_chucnang.png | Reference UI | Row action ▼ dropdown open | Sửa / Nhân bản / Ngừng sử dụng / Xóa |
-| references/images/danhmuc_nhacungcap_them_tochuc.png | Reference UI | Create/Edit dialog — Tổ chức tab | Form layout, tabs, sub-tabs, buttons |
-| references/images/danhmuc_nhacungcap_them_canhan.png | Reference UI | Create/Edit dialog — Cá nhân tab | Deferred per Phase 1 |
-| references/images/danhmuc_nhacungcap_xoa.png | Reference UI | Delete confirm dialog | Small centered dialog, warning message |
-| references/images/danhmuc_nhacungcap_xacnhandiachiNCC.png | Reference UI | Bulk address update dialog | Wide dialog with NCC table inside |
-| references/images/danhmuc_nhacungcap_detail.png | Reference UI | Detail: master-detail layout (MISA) | Left list + right panel; AccountingMini uses separate route |
+| danhmuc_nhacungcap_list.png | Current UI | Main list page — default state | Primary layout reference |
+| danhmuc_nhacungcap_list_menu_chucnang.png | Current UI | Row context menu | 5-item dropdown |
+| danhmuc_nhacungcap_them_canhan.png | Current UI | Add modal — Cá nhân tab | Multi-tab form |
+| danhmuc_nhacungcap_them_tochuc.png | Current UI | Add modal — Tổ chức tab | Same modal, different fields |
+| danhmuc_nhacungcap_xoa.png | Current UI | Delete confirmation dialog | Simple confirm modal |
+| danhmuc_nhacungcap_xacnhandiachiNCC.png | Current UI | Update address confirmation | Full-screen modal with table |
+| danhmuc_nhacungcap_detail.png | Current UI | Supplier detail / ledger view | Master-detail split layout |
+| danhmuc_nhacungcap_import_excel.png | Current UI | Import Excel wizard — Step 1 | **Deferred** — out of MVP scope |
 
 ## 3. Visual Source Priority
 
 | Source | Priority | Usage |
 |---|---:|---|
 | Current UI images | 1 | Main source for pixel implementation |
-| Reference UI images | 2 | UX/reference patterns only |
-| Reference markdown | 3 | Business behavior, not pixel values |
-
-All measurements are estimates (Medium confidence) unless noted — no actual AccountingMini UI exists yet.
+| Reference UI images | 2 | Not available — skip |
+| Reference markdown | 3 | Business behavior only |
 
 ## 4. Layout Measurements
 
 | Area | Est. Width | Est. Height | Padding | Notes |
 |---|---:|---:|---|---|
-| Page content area | 100% | 100vh | px-6 py-4 | Inside AppShell content wrapper |
-| Page header row | 100% | 40px | pb-4 | Title + breadcrumb |
-| Toolbar card | 100% | 52px | px-4 py-3 | White card, full-width |
-| DataGrid container | 100% | flex-1 | 0 | Fills remaining vertical space |
-| Grid header row | 100% | 40px | px-3 | Sticky top |
-| Grid data row | 100% | 44px | px-3 | Each row |
-| Pagination bar | 100% | 44px | px-4 py-2 | White card, bottom |
-| Form dialog | 720px | auto (max 90vh) | p-6 | Centered modal, scrollable content |
-| Bulk address dialog | 900px | auto (max 90vh) | p-6 | Wide dialog with embedded NCC table |
-| Delete confirm dialog | 400px | auto | p-6 | Small centered dialog |
+| Viewport (full) | 1280px+ | 100vh | — | Responsive min-width 1024px |
+| App sidebar (nav) | ~220px | 100vh | 0 | Dark navy bg, icon+text |
+| Main content area | calc(100% - 220px) | 100vh | 16px 24px | White bg |
+| Page header / breadcrumb | 100% | ~40px | 0 16px | Inline with global topbar |
+| Summary cards row | 100% | ~80px | 0 0 12px | 2+ cards, gap ~12px |
+| Summary card | ~50% | ~72px | 12px 16px | White bg, border, radius 8px |
+| Toolbar | 100% | ~40px | 0 0 8px | Flex row, space-between |
+| Search input | ~280px | ~32px | 8px 12px | Left of toolbar |
+| Icon button (filter/export) | ~32px | ~32px | 6px | Square |
+| AG Grid container | 100% | flex-fill | — | Fills remaining height |
+| AG Grid header row | 100% | ~36px | 0 8px | Light gray bg |
+| AG Grid data row | 100% | ~36px | 0 8px | Alternating rows |
+| Pagination bar | 100% | ~40px | 8px 0 | Below grid |
+| Add/Edit modal | ~820px | auto (max 90vh) | 24px | Centered overlay |
+| Delete confirm modal | ~420px | auto | 24px | Centered |
+| Address update modal | ~90vw | ~85vh | 24px | Near full-screen |
 
 ## 5. Design Tokens
 
 | Token Name | Value | Usage | Source | Confidence |
 |---|---|---|---|---|
-| page-bg | `bg-gray-50` / `#f5f6fa` | Page background | MISA list view | Medium |
-| card-bg | `#ffffff` | Toolbar, grid, pagination card bg | All screens | High |
-| border-color | `#e5e7eb` | Card borders, grid borders | Visible in all screens | Medium |
-| primary-color | `#f97316` (orange-500) | "Thêm" button, active sidebar | MISA primary | Medium |
-| primary-hover | `#ea580c` (orange-600) | Hover state — primary button | Assumption | Low |
-| danger-color | `#ef4444` (red-500) | Negative debt value, delete icon | Negative debt visible | High |
-| text-primary | `#111827` | Page title, grid cell text | Dark text visible | Medium |
-| text-secondary | `#6b7280` | Secondary labels, placeholder | Gray text visible | Medium |
-| text-link | `#2563eb` (blue-600) | "Lập CT mua hàng" textlink | Blue link visible in grid | Medium |
-| table-header-bg | `#f9fafb` | Grid header row background | Light gray header | Medium |
-| table-row-hover | `#f3f4f6` | Row hover state | Standard | Low |
-| table-selected-row | `#eff6ff` | Selected/active row | Assumption | Low |
-| button-height | `32px` | All toolbar buttons | MISA toolbar | Medium |
-| input-height | `32px` | Search input, form inputs | Visible | Medium |
-| toolbar-height | `52px` | Toolbar card total height | Estimate | Low |
-| grid-header-height | `40px` | Grid column header row | Estimate | Low |
-| grid-row-height | `44px` | Each data row | Estimate | Low |
-| page-padding-x | `24px` (px-6) | Horizontal page padding | Estimate | Low |
-| card-padding | `16px` (p-4) | Card internal padding | Estimate | Low |
-| border-radius-card | `8px` | Card/panel corners | Standard | Low |
-| border-radius-btn | `4px` | Button corners | MISA buttons | Medium |
-| icon-size | `16px` | Action icons, chevron ▼ | Standard | Medium |
-| dialog-overlay | `rgba(0,0,0,0.5)` | Modal backdrop | Standard | Low |
+| page-bg | #F5F6FA | Main content bg | list screenshot | High |
+| card-bg | #FFFFFF | Summary cards, modal | list screenshot | High |
+| border-color | #E0E3E9 | Card borders, input borders | list screenshot | High |
+| primary-color | #1E88E5 | Primary buttons, active links | add modal button | Medium |
+| success-color | #43A047 | "Thêm" split button | toolbar | Medium |
+| danger-color | #E53935 | Delete action, error text | delete dialog | Medium |
+| text-primary | #212121 | Main body text, labels | all screens | High |
+| text-secondary | #616161 | Secondary labels, metadata | list screenshot | Medium |
+| text-muted | #9E9E9E | Placeholder text, hints | add modal | Medium |
+| table-header-bg | #F0F2F5 | AG Grid header row | list screenshot | High |
+| table-row-bg | #FFFFFF | Default row bg | list screenshot | High |
+| table-row-alt-bg | #FAFBFC | Alternating row bg | list screenshot | Medium |
+| table-row-selected | #E3F2FD | Selected/checked row | assumption | Low |
+| toolbar-height | 40px | Toolbar component | list screenshot | High |
+| input-height | 32px | Search, form inputs | list/modal | High |
+| button-height | 32px | Toolbar buttons | list screenshot | High |
+| modal-radius | 8px | Modal border-radius | add modal | Medium |
+| card-radius | 8px | Summary card radius | list screenshot | Medium |
+| icon-size | 16px | Toolbar icons | list screenshot | Medium |
+| sidebar-width | 220px | Left nav | list screenshot | Medium |
+| page-padding | 16px 24px | Content area padding | list screenshot | Medium |
+| grid-row-height | 36px | AG Grid rowHeight prop | list screenshot | High |
 
 ## 6. Typography Specification
 
 | Element | Font Size | Font Weight | Color | Notes |
 |---|---:|---:|---|---|
-| Page title | 18px | 600 | text-primary | "Danh sách nhà cung cấp" |
-| Breadcrumb | 12px | 400 | text-secondary | "Danh mục / Nhà cung cấp" |
-| Toolbar button text | 13px | 500 | white or text-primary | Depends on variant |
-| Search input placeholder | 13px | 400 | text-secondary | "Tìm kiếm…" |
-| Grid header text | 12px | 600 | text-primary | Normal case (not uppercase) |
-| Grid cell text | 13px | 400 | text-primary | Regular data |
-| Grid cell — negative debt | 13px | 400 | danger-color | `(40,602)` red parentheses |
-| Grid textlink | 13px | 400 | text-link | "Lập CT mua hàng" |
-| Pagination text | 12px | 400 | text-secondary | "365 bản ghi / 20 mỗi trang" |
-| Dialog title | 16px | 600 | text-primary | Modal header |
-| Form label | 13px | 500 | text-primary | Field labels |
-| Form input text | 13px | 400 | text-primary | Input values |
+| Page title | 16px | 600 | #212121 | Feature name in topbar |
+| Breadcrumb | 13px | 400 | #616161 | Path segments |
+| Summary card label | 13px | 500 | #616161 | Above the value |
+| Summary card value | 20px | 700 | #212121 | Large number |
+| Toolbar button text | 13px | 500 | #212121 | Text buttons |
+| Input placeholder | 13px | 400 | #9E9E9E | Search placeholder |
+| Input text | 13px | 400 | #212121 | Typed text |
+| AG Grid header text | 13px | 600 | #424242 | Column headers |
+| AG Grid cell text | 13px | 400 | #212121 | Default rows |
+| AG Grid money cell | 13px | 400 | #212121 | Right-aligned |
+| Pagination text | 13px | 400 | #616161 | "100 bản ghi / trang" |
+| Modal title | 16px | 600 | #212121 | Dialog heading |
+| Form label | 13px | 500 | #424242 | Field labels |
+| Form input text | 13px | 400 | #212121 | Field values |
+| Tab label | 13px | 500 | #424242 / primary | Active vs inactive |
 
 ## 7. Component Measurement Specification
 
-| Component | Height | Width | Padding | Radius | Notes |
-|---|---:|---:|---|---:|---|
-| PageHeader | 40px | 100% | pb-4 | — | Title left, breadcrumb above |
-| ToolbarCard | 52px | 100% | px-4 py-3 | 8px | White card wrapping toolbar row |
-| SearchInput | 32px | 240px | px-3 | 4px | Debounce 300ms |
-| isActiveDropdown | 32px | 140px | px-3 | 4px | Radix Select; "Tất cả/Đang dùng/Ngừng" |
-| ExportDropdown | 32px | auto | px-3 | 4px | "Tiện ích ▼" secondary button |
-| Button (primary) | 32px | auto | px-4 | 4px | Orange bg, white text — "Thêm" |
-| Button (secondary) | 32px | auto | px-4 | 4px | Outline border variant |
-| DataGrid | flex-1 | 100% | 0 | 0 | `<DataGrid>` component |
-| GridHeaderRow | 40px | 100% | px-3 | 0 | Sticky, `headerHeight={40}` |
-| GridDataRow | 44px | 100% | px-3 | 0 | `rowHeight={44}` |
-| PaginationBar | 44px | 100% | px-4 py-2 | 8px | White card bottom |
-| FormDialog | auto | 720px | p-6 | 12px | Centered modal |
-| BulkAddressDialog | auto | 900px | p-6 | 12px | Wider — embedded NCC table |
-| DeleteDialog | auto | 400px | p-6 | 12px | Small confirm |
+| Component | Height | Width | Padding | Gap | Radius | Notes |
+|---|---:|---:|---|---:|---:|---|
+| Summary Card | 72px | flex-1 | 12px 16px | — | 8px | min 2 cards |
+| Toolbar | 40px | 100% | 0 | 8px | — | flex row |
+| Search Input | 32px | 280px | 8px 12px | — | 4px | with search icon |
+| Icon Button | 32px | 32px | 6px | — | 4px | filter, export |
+| Text Button | 32px | auto | 8px 16px | — | 4px | Cập nhật địa chỉ, Tiện ích |
+| Split Button | 32px | auto | 8px 16px | — | 4px | Thêm + chevron |
+| AG Grid Row | 36px | 100% | 0 8px | — | — | rowHeight config |
+| AG Grid Header | 36px | 100% | 0 8px | — | — | headerHeight config |
+| Pagination | 40px | 100% | 8px 16px | 8px | — | page-size selector |
+| Add/Edit Modal | auto | 820px | 24px | 16px | 8px | max-height 90vh |
+| Modal Tab | 36px | auto | 0 16px | — | — | bottom tabs in form |
+| Delete Modal | auto | 420px | 24px | 16px | 8px | simple confirm |
+| Address Modal | 85vh | 90vw | 24px | 16px | 8px | full-screen table |
+| Row Context Menu | auto | 160px | 6px 12px | — | 4px | 5 items |
+| Type Selector Tab | 36px | auto | 0 20px | — | — | Cá nhân / Tổ chức |
 
 ## 8. Grid / Table Specification
 
+### Main Supplier List Grid
+
 | Column | Est. Width | Alignment | Header Text | Cell Behavior | Notes |
 |---|---:|---|---|---|---|
-| Mã nhà cung cấp | 120px | left | Mã nhà cung cấp | ellipsis | Sortable; `sortBy=code` |
-| Tên nhà cung cấp | 200px | left | Tên nhà cung cấp | ellipsis | Sortable; `sortBy=name` |
-| Địa chỉ | 180px | left | Địa chỉ | ellipsis | Not sortable |
-| Số điện thoại | 110px | left | Số điện thoại | ellipsis | Not sortable |
-| Nợ (currentDebtAmount) | 130px | right | Nợ | numeric `(n,nnn)` red if < 0 | Sortable; `sortBy=currentDebtAmount` |
-| Lập CT mua hàng | 120px | center | Lập CT mua hàng | blue textlink | Hidden when no `supplier.createPurchaseVoucher` |
-| Chức năng | 80px | center | Chức năng | ▼ dropdown button | Always visible |
+| Checkbox | 40px | center | — | Row select | Sticky left |
+| STT | 48px | center | # / STT | Auto-number | — |
+| Mã NCC | 100px | left | Mã | Monospace, ellipsis | — |
+| Tên nhà cung cấp | flex (~300px) | left | Tên nhà cung cấp | Ellipsis, clickable | Opens detail |
+| Nhóm | 120px | left | Nhóm | Ellipsis | — |
+| Điện thoại | 130px | left | Điện thoại | — | — |
+| Địa chỉ | flex (~200px) | left | Địa chỉ | Ellipsis | — |
+| Nợ cần trả | 140px | right | Nợ cần trả | Money format | Red if negative |
+| Trả trước | 140px | right | Trả trước / Ứng trước | Money format | — |
+| Trạng thái | 100px | center | Trạng thái | Badge/chip | Đang sử dụng / Ngừng |
+| Hành động | 60px | center | — | Icon button (⋮) | Opens context menu |
 
-Notes:
-- **No "Số TK NH/CCCD" column** — `bankAccount` is form-only per Phase 1 decision (not in `SupplierListItem`)
-- **No "Nợ cũ" column** — deferred per Phase 1
-- Total approx. width ≈ 940px → horizontal scroll on narrow viewports
-- Negative `currentDebtAmount`: format as `(1,234,567)` in `danger-color`; positive: normal `1,234,567`
-- Currency/number format: Vietnamese locale (comma as thousands separator, period as decimal)
+### Address Update Modal Grid
+
+| Column | Est. Width | Alignment | Header | Notes |
+|---|---:|---|---|---|
+| Tên nhà cung cấp | flex | left | Tên nhà cung cấp | — |
+| Mã số thuế | 140px | left | Mã số thuế | — |
+| Địa chỉ cũ | flex | left | Địa chỉ cũ | — |
+| Địa chỉ mới | flex | left | Địa chỉ mới | — |
+
+### Detail / Ledger Grid (in detail panel)
+
+| Column | Est. Width | Alignment | Header | Notes |
+|---|---:|---|---|---|
+| # | 40px | center | # | STT |
+| Loại | 100px | left | Loại | Voucher type |
+| Ngày hạch toán | 120px | left | Ngày hạch toán | Date |
+| Số chứng từ | 120px | left | Số chứng từ | Clickable link |
+| GPN | 120px | left | GPN | — |
+| Ngày hạch toán 2 | 120px | left | Ngày hạch toán | — |
+| Số hóa đơn | 120px | left | Số hóa đơn | — |
+| Chú thích | flex | left | Chú thích | Ellipsis |
 
 ## 9. Interaction Visual States
 
 | Element | State | Expected Visual | Source | Notes |
 |---|---|---|---|---|
-| Grid row | hover | `table-row-hover` (`#f3f4f6`) bg | Standard | |
-| Grid row | selected/active | `table-selected-row` (`#eff6ff`) | Assumption | |
-| Negative Nợ cell | always | red text `(value)` with parentheses | Visible in screenshot | High |
-| "Thêm" button | hover | `primary-hover` darker orange | Assumption | |
-| isActive dropdown | open | Radix Select dropdown list | Standard Radix | |
-| Chức năng ▼ | click | Dropdown: Sửa / Nhân bản / Ngừng sử dụng / Xóa | Visible in ref screenshot | High |
-| Search input | focus | blue ring outline | Radix default | |
-| Disabled row action | — | grayed out, cursor-not-allowed | Assumption | When no permission |
-| Grid loading | — | `GridLoadingState` AG Grid overlay | Existing component | |
-| Grid empty | — | `GridEmptyState` centered message | Existing component | |
-| Delete dialog | 409 state | Error message + "Xem phát sinh" button | BA requirement | |
-| Form dialog | submitting | button spinner + disabled all inputs | Standard | |
-| isActive badge | isActive=false | gray/muted badge "Ngừng" | Assumption | |
+| AG Grid row | Hover | Light blue tint bg | assumption | Standard AG Grid |
+| AG Grid row | Selected | Blue-tinted bg (#E3F2FD) | assumption | Row click |
+| AG Grid row | Checkbox checked | Checkbox filled, row highlight | list screenshot | Bulk select |
+| Toolbar button | Hover | Bg #F5F5F5, slight shadow | assumption | Standard |
+| Toolbar button | Disabled | Opacity 0.4 | assumption | Permission guard |
+| Search input | Focus | Border #1E88E5, shadow | assumption | Standard |
+| "Thêm" button | Hover | Darker green | assumption | — |
+| Modal tab | Active | Underline + primary color text | add modal | — |
+| Modal tab | Inactive | #616161 text, no underline | add modal | — |
+| Type selector | Active | Bold + primary underline | add modal | Cá nhân / Tổ chức |
+| Context menu item | Hover | #F5F5F5 bg | assumption | — |
+| "Ngừng sử dụng" item | Default | Red text | assumption | Destructive action |
+| Status badge (active) | Default | Green bg + text | assumption | "Đang sử dụng" |
+| Status badge (inactive) | Default | Gray bg + text | assumption | "Ngừng sử dụng" |
+| Loading | Skeleton | AG Grid skeleton rows | assumption | TanStack Query |
+| Empty state | No data | AG Grid default empty | assumption | — |
 
 ## 10. Pixel-perfect Implementation Rules
 
-During Phase 8 Frontend Coding, AI must:
-- Apply design tokens from Section 5 via Tailwind classes — no inline hex values
-- Negative `currentDebtAmount`: render as `(n,nnn,nnn)` string in `text-red-500`; use AG Grid `cellRenderer` or `valueFormatter`
-- "Lập CT mua hàng": render as anchor/button with `text-blue-600 hover:underline` inside AG Grid cell
-- `rowHeight={44}` and `headerHeight={40}` on `<DataGrid>` component
-- Grid column `width` and `minWidth` from Section 8 — do not let AG Grid auto-size blindly
-- Toolbar: `Card` wrapper with `flex items-center gap-2 px-4 py-3`
-- isActive filter: Radix `Select` component from `src/components/ui/`
-- Primary "Thêm" button: `Button` with `variant="default"` (maps to primary/orange)
-- Dialog widths: use `max-w-[720px]` / `max-w-[900px]` / `max-w-[400px]` Tailwind classes
-- Do not use AG Grid `AutoSizeColumns` — specify widths explicitly
-- Do not add extra shadows or borders beyond what is specified here
+- Use `rowHeight: 36` and `headerHeight: 36` in AG Grid config.
+- Apply design token `table-header-bg` (#F0F2F5) to AG Grid header via `ag-header-row` CSS.
+- Summary cards must use `flex: 1` with `min-width: 200px`; do not hard-code widths.
+- Toolbar must be flex row with `gap: 8px`; search input pinned left, buttons pinned right via `marginLeft: auto`.
+- Modal widths: add/edit = 820px max, delete = 420px, address update = 90vw.
+- Money columns: right-align text, use Vietnamese locale formatting (`1.234.567,89`).
+- Do not add box shadows to cards unless visible in screenshots.
+- Tab bar in add/edit modal is at the bottom of the form section, not at the top of the modal.
+- "Thêm" is a split button (primary action + chevron dropdown) — do not render as single button.
+- The type selector (Cá nhân / Tổ chức) is a tab at the top of the form, separate from the bottom form tabs.
 
 ## 11. Pixel Review Checklist
 
-| Area | Check | Expected | Status |
-|---|---|---|---|
-| Page background | bg color | `bg-gray-50` | Pending |
-| Page title | font size/weight | 18px / semibold | Pending |
-| Toolbar | height + bg | ~52px, white card | Pending |
-| Search input | width × height | 240px × 32px | Pending |
-| isActive dropdown | visible + width | in toolbar, ~140px | Pending |
-| "Thêm" button | color + height | orange bg, 32px | Pending |
-| Export button | style | secondary/outline, 32px | Pending |
-| Grid header bg | color | `bg-gray-50` / `#f9fafb` | Pending |
-| Grid header height | px | ~40px | Pending |
-| Grid row height | px | ~44px | Pending |
-| Negative debt | color + format | red `(value)` | Pending |
-| "Lập CT mua hàng" | color + style | blue textlink | Pending |
-| Chức năng ▼ dropdown | items | Sửa/Nhân bản/Ngừng/Xóa | Pending |
-| Column widths | Mã/Tên/Nợ | ~120/200/130px | Pending |
-| Pagination position | placement | below grid, white card | Pending |
-| Form dialog width | max-width | ~720px | Pending |
-| Form tab bar | style | underline tabs: Tổ chức/Cá nhân | Pending |
-| Form buttons | order + labels | Hủy / Cất / Cất và Thêm | Pending |
-| Delete dialog width | max-width | ~400px, centered | Pending |
-| Delete 409 state | error UX | message + "Xem phát sinh" button | Pending |
-| Bulk address dialog | width | ~900px | Pending |
+| # | Item | Check |
+|---:|---|---|
+| 1 | Sidebar width matches ~220px | [ ] |
+| 2 | Summary cards row height ~72px | [ ] |
+| 3 | Toolbar height 40px | [ ] |
+| 4 | Search input width ~280px, height 32px | [ ] |
+| 5 | AG Grid rowHeight=36, headerHeight=36 | [ ] |
+| 6 | AG Grid header bg #F0F2F5 | [ ] |
+| 7 | Money columns right-aligned | [ ] |
+| 8 | Vietnamese number format applied | [ ] |
+| 9 | Add modal width 820px max | [ ] |
+| 10 | Type selector tab at top of modal form | [ ] |
+| 11 | Form tabs at bottom of form area | [ ] |
+| 12 | "Thêm" rendered as split button | [ ] |
+| 13 | Status badges — green/gray | [ ] |
+| 14 | Delete dialog width 420px | [ ] |
+| 15 | Address modal 90vw × 85vh | [ ] |
 
 ## 12. Unclear / Incomplete Items
 
-### 1. Missing Information
-
-| ID | Info | Needed For | Impact | Required Before Next Phase? |
-|---|---|---|---|---|
-| P2-M1 | No AccountingMini-specific UI design; all measurements from MISA reference | Phase 8 pixel coding | Medium — adapt tokens to AccountingMini system | No |
-| P2-M2 | Exact primary/brand color of AccountingMini not confirmed | Section 5 primary-color token | Medium — may need update during Phase 8 | No |
-
-### 2. Unclear Requirements
-
-| ID | Requirement | Why Unclear | Recommended Default | Required? |
-|---|---|---|---|---|
-| P2-U1 | "Lập CT mua hàng" textlink click target — route? | Purchase voucher create route not yet designed | `/accounting/purchase-vouchers/create?supplierId={id}` or dialog | No |
-
-### 4. Assumptions
-
-| ID | Assumption | Risk | Confirm? |
+| ID | Item | Blocking? | Notes |
 |---|---|---|---|
-| P2-A1 | AccountingMini uses Tailwind + shadcn/Radix UI; tokens map to Tailwind classes | Low | No |
-| P2-A2 | Negative debt: `(value)` parentheses + red = accounting standard convention | Low | No |
-| P2-A3 | Primary orange ~#f97316 matches AccountingMini brand | Medium — brand palette not confirmed | Phase 8 |
-| P2-A4 | "Số TK NH/CCCD" column NOT in grid (bankAccount is form-only per Phase 1) — divergence from MISA reference | Medium — MISA shows it in grid | Already decided |
+| P2-Q1 | Exact primary color hex (appears teal-blue in some screens, pure blue in others) | No | Use #1E88E5 as default; verify in Phase 9 |
+| P2-Q2 | Exact number of summary cards and their labels (only 2 visible, labels cut off) | No | Assume: Nợ cần trả total + Trả trước total |
+| P2-Q3 | Whether detail view is a split-panel (master-detail) or a separate page route | No | From screenshot appears split-panel; clarify in Phase 5 |
+| P2-A1 | Alternating row color assumed #FAFBFC — not pixel-verified | No | Apply default; check in Phase 9 |
+| P2-A2 | Import Excel screen included in inventory but is deferred scope — pixel spec not extracted | No | No action needed for MVP |
 
 ## 13. Definition of Done
-- [x] All 8 screenshots analyzed and inventoried
-- [x] Visual source priority defined
-- [x] Layout measurements estimated for all major areas
-- [x] Design tokens extracted with confidence levels
-- [x] Typography specification documented
+
+- [x] All 8 screenshots inventoried
+- [x] Layout measurements documented for all visible areas
+- [x] Design tokens extracted with confidence ratings
+- [x] Typography specified for all text elements
 - [x] Component measurements specified
-- [x] Grid/table columns specified (widths, alignment, behavior)
-- [x] Interaction visual states documented
-- [x] Pixel-perfect implementation rules written
-- [x] Pixel review checklist created (all items: Pending — for Phase 9)
-- [x] Unclear items and assumptions documented
+- [x] AG Grid columns specified for main list and detail grids
+- [x] Interaction states documented (assumptions marked)
+- [x] Pixel-perfect rules defined for Phase 8
+- [x] Pixel review checklist ready for Phase 9
+- [x] Unclear items logged (no blocking items)

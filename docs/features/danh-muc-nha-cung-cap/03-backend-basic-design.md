@@ -5,341 +5,342 @@ Status: Completed
 Blocking Issues: No
 User Confirmation Required: No
 
-## Approval Status
-Status: Approved
-Approved At: 2026-05-08
-
----
-
 ## 1. Feature Config Summary
-- entity: `Supplier` | backend: `accounting_api` | soft_delete: `true` | audit_fields: `true`
-- tenant_strategy: `jwt_claim_or_header` | api_base_path: `/api/v1`
-- business_rules: `supplier-code-unique-per-tenant`, `soft-delete`, `cannot-delete-with-transactions`, `tenant-isolation`, `negative-debt-display`
+
+| Field | Value |
+|---|---|
+| Feature | danh-muc-nha-cung-cap |
+| Backend project | `accounting_api` |
+| Entity | `Supplier` (exists in `Domain/Entities/Supplier.cs`) |
+| Existing feature | `Application/Features/Suppliers/` — partially implemented |
+| Permissions prefix | `supplier.*` |
+| Delete semantics | Soft delete (config + PDR) |
 
 ## 2. Backend Input Analysis
 
-| Input | Status | Key Findings |
+| Source | Status | Key Findings |
 |---|---|---|
-| config.yaml | Found | 9 capabilities; soft_delete + audit_fields confirmed |
-| 01-frontend-basic-design.md | Found | 9 API endpoints; 13 confirmed scope items; bankAccount form-only |
-| 02-frontend-ui-pixel-analysis.md | Found | No new backend data; confirms DTO fields for grid columns |
-| Existing `PaginatedList<T>` | Conflict | `.TotalCount` serializes as `totalCount` — frontend expects `total` → P3-C1 |
-| Existing `PaginationRequest` | Conflict | `.SortDescending: bool` — frontend uses `sortDir: 'asc'\|'desc'` → P3-C2 |
-| `PaginationRequest.MaxPageSize` | Conflict | Hard-coded 200 — config `max_page_size: 500` → P3-C3 |
+| `01-frontend-basic-design.md` | Read | Confirmed scope: CRUD + Export. Deferred: import, merge, clone, update-address. |
+| `02-frontend-ui-pixel-analysis.md` | Read | Type selector (Cá nhân/Tổ chức), group field, IsCustomer flag, CCCD field visible in forms. |
+| `Domain/Entities/Supplier.cs` | Read | Basic entity exists — missing Type, Group, IsCustomer, IdNumber fields. |
+| `Application/Features/Suppliers/` | Read | CRUD + Export + Clone + BulkUpdateAddress already implemented. Bulk-delete and summary missing. |
+| `Api/Endpoints/SupplierEndpoints.cs` | Read | 9 endpoints already wired. |
+| `project-pdr/supplier-management.md` | Read | PDR aligns with existing implementation; GroupId not yet modeled. |
 
 ## 3. Source Review
-Three structural conflicts between existing backend code and Phase 1 contract — all resolved via design decisions (see Section 20).
+
+**Existing implementation (already working):**
+- `GET /api/v1/suppliers` — paged list with search/filter/sort
+- `GET /api/v1/suppliers/{id}` — detail
+- `GET /api/v1/suppliers/export` — Excel export
+- `POST /api/v1/suppliers` — create
+- `PUT /api/v1/suppliers/{id}` — update
+- `DELETE /api/v1/suppliers/{id}` — soft delete with transaction guard
+- `PATCH /api/v1/suppliers/{id}/toggle-active` — status toggle
+- `POST /api/v1/suppliers/{id}/clone` — clone (deferred MVP but already live)
+- `PUT /api/v1/suppliers/bulk-update-address` — address update (deferred MVP but already live)
+
+**Missing vs confirmed scope:**
+- `GET /api/v1/suppliers/summary` — needed for summary cards
+- `POST /api/v1/suppliers/bulk-delete` — needed for bulk delete action
+
+**Entity gaps vs screenshots:**
+- `SupplierType` (enum: Organization/Individual) — visible in form's type selector
+- `GroupId` (foreign key to future `SupplierGroup`) — visible in form's group dropdown
+- `GroupName` (denormalized string until SupplierGroup entity exists)
+- `IsCustomer` (bool) — `Là khách hàng` checkbox in form
+- `IdNumber` (string?) — CCCD field for Individual type
+- `IsInternalObject` (bool) — `Là đối tượng nội bộ` in organization form
 
 ## 4. Business Capability Extraction
 
 | Capability | Source | Backend Required? | Notes |
 |---|---|---|---|
-| List + search + pagination | Phase 1 | Yes | `GetSuppliersQuery` |
-| Filter by isActive | Phase 1 | Yes | `?isActive=true/false`; null = all |
-| Sort (code/name/debt/dates) | config | Yes | `sortBy` + `sortDir` string params |
-| Create supplier | Phase 1 | Yes | code unique-per-tenant |
-| Update supplier | Phase 1 | Yes | |
-| Soft delete | Phase 1 | Yes | block if has transactions |
-| Toggle active/inactive | Phase 1 | Yes | `PATCH /toggle-active` |
-| Clone supplier | Phase 1 (BA) | Yes | auto-generate code |
-| Export to Excel (.xlsx) | Phase 1 | Yes | same filters as list |
-| Bulk update address | Phase 1 | Yes | `PUT /bulk-update-address` |
-| "Lập CT mua hàng" textlink | Phase 1 | No | frontend navigation only |
-| Metric cards / summary | Phase 1 (deferred) | No | |
-| Bulk delete | Phase 1 (deferred) | No | |
+| Paged list + search + filter + sort | UI + docs | Yes | Implemented |
+| Summary cards (debt totals) | UI (list page) | Yes | Missing endpoint |
+| Create supplier (Org/Individual) | UI + docs | Yes | Partially — no type field |
+| Update supplier | UI + docs | Yes | Implemented |
+| Soft delete + transaction guard | Config + docs | Yes | Implemented |
+| Bulk delete | UI (toolbar) + PDR | Yes | Missing |
+| Toggle active | UI + docs | Yes | Implemented |
+| Export Excel | UI + config | Yes | Implemented |
+| SupplierType (Org/Individual) | UI form | Yes | Entity field missing |
+| SupplierGroup | UI form | Yes | Entity + table missing |
+| IsCustomer sync | UI form + docs | Yes | Entity field missing |
+| IdNumber (CCCD) | UI form | Yes | Entity field missing |
+| IsInternalObject | UI form | Yes | Entity field missing |
+| Clone supplier | UI + backend | Later | Deferred MVP; keep existing impl |
+| Bulk update address | UI + backend | Later | Deferred MVP; keep existing impl |
+| Import Excel | UI | No | Deferred |
+| Merge suppliers | Docs | No | Deferred |
+| Transaction ledger | UI | No | Not in confirmed scope |
 
 ## 5. Backend Feature Comparison
 
-| Capability | Frontend Scope | Backend Scope | Alignment Status | Required Action |
+| Capability | Current UI | Reference Markdown | Backend Impact | Decision |
 |---|---|---|---|---|
-| List + pagination + search | Confirmed | Design here | Aligned | Approve |
-| isActive filter dropdown | Confirmed | `?isActive` param | Aligned | Approve |
-| CRUD + toggle + clone | Confirmed | Design here | Aligned | Approve |
-| Delete + Xem phát sinh (409 + transactionCount) | Confirmed | 409 + `{ transactionCount }` | Aligned | Approve |
-| Export xlsx | Confirmed | Design here | Aligned | Approve |
-| Bulk address update | Confirmed | Design here | Aligned | Approve |
-| `currentDebtAmount` in response | Confirmed (P1-A1) | Stored field (nullable) | Need Confirmation | P3-Q1 |
-| Response shape `total` vs `totalCount` | `total` | `TotalCount` | Conflict | P3-C1 — API wrapper DTO |
-| `sortDir` string vs `SortDescending` bool | `sortDir` | `SortDescending` | Conflict | P3-C2 — convert in query |
+| Summary cards | Yes | No | API Required | Implement |
+| Supplier type (Org/Individual) | Yes | Yes | Database Required | Implement |
+| Supplier group | Yes | Yes | Database Required | Implement |
+| IsCustomer flag | Yes | Yes | Database Required | Implement |
+| IdNumber (CCCD) | Yes | Yes | Database Required | Implement |
+| IsInternalObject | Yes | Yes | Database Required | Implement |
+| Bulk delete | Yes | Yes | API Required | Implement |
+| Export with filters | Yes | No | Export Required | Implement (already done) |
+| Clone | Yes (row menu) | No | API Required | Defer (keep existing) |
+| Update address | Yes | No | API Required | Defer (keep existing) |
 
 ## 6. Backend Gap Analysis
 
 ### 6.1 Missing Backend Capabilities
-- `PageResult<T>` wrapper DTO at API layer (resolves P3-C1)
-- Export package not in `Directory.Packages.props` (P3-M1 — **must resolve before Phase 6**)
+1. `GET /api/v1/suppliers/summary` — returns aggregate totals for summary cards
+2. `POST /api/v1/suppliers/bulk-delete` — deletes multiple suppliers with transaction guard per ID
+3. `SupplierType` enum + entity field — required for form differentiation
+4. `GroupName` / `GroupId` entity field — required for group filter and display
+5. `IsCustomer`, `IdNumber`, `IsInternalObject` entity fields — required for create/update form
 
-### 6.3 Conflicting Backend Requirements
-- P3-C1: `PaginatedList.TotalCount` → `total` → API layer wrapper
-- P3-C2: `SortDescending: bool` → `sortDir: string` → convert in query model
-- P3-C3: `MaxPageSize 200` → override to 500 in `GetSuppliersQuery`
+### 6.2 Extra Backend Capabilities (already implemented, MVP-deferred)
+- Clone: `/api/v1/suppliers/{id}/clone` — keep gated by `supplier.create` permission
+- BulkUpdateAddress: `/api/v1/suppliers/bulk-update-address` — keep gated by `supplier.updateAddress`
+
+### 6.3 Conflicting Requirements
+- Code max length: PDR says 50 chars, CreateSupplierValidator says 32 chars. → Use 50 (PDR is authoritative).
+- Name max length: PDR says 200 chars, validator says 255. → Use 255 (more lenient; no business reason to restrict).
 
 ### 6.4 Backend Open Questions
 
-| # | Question | Impact If Not Clarified | Recommended Default | Must Resolve Before Phase 4? |
-|---|----------|------------------------|---------------------|-------------------------------|
-| P3-Q1 | `currentDebtAmount`: stored field vs computed JOIN? | API field may always be null | Stored nullable field | No |
-| P3-Q2 | Export package: EPPlus vs ClosedXML? | Phase 6 implementation blocked | ClosedXML (MIT license) | No (Phase 6) |
-| P3-Q3 | Delete 409 body: `{ message, transactionCount }` confirm? | API contract ambiguous | Yes — confirm format | Yes |
+| # | Question | Impact | Must Resolve Before Phase 4? |
+|---|---|---|---|
+| B3-Q1 | SupplierGroup: dedicated entity with own CRUD, or simple string tag? | Database design | Yes |
+| B3-Q2 | Summary card values: what aggregates exactly? (total debt, credit balance, paid-30-days?) | API response shape | Yes |
+| B3-Q3 | BulkDelete: return partial-success (skip suppliers with transactions) or fail-all? | API contract | Yes |
+| B3-Q4 | Code max length: PDR says 50, validator says 32 — which wins? | Validation | No |
 
 ## 7. Confirmed Backend Scope
 
-**Implement:** Supplier entity + EF config + migration + 9 MediatR handlers + 9 Minimal API endpoints + permissions + `PageResult<T>` wrapper DTO
-
-**Not implementing:** metric summary endpoint, bulk delete, "Lập CT mua hàng" backend logic
+| Capability | Status |
+|---|---|
+| Paged list + search/filter/sort | Keep as-is |
+| Summary cards endpoint | Add |
+| Create supplier (with Type, Group, IsCustomer, IdNumber, IsInternalObject) | Extend entity + command |
+| Update supplier (same fields) | Extend entity + command |
+| Delete with transaction guard | Keep as-is |
+| Bulk delete | Add |
+| Toggle active | Keep as-is |
+| Export Excel | Keep as-is |
+| Clone | Keep existing (gated, MVP-deferred) |
+| Bulk update address | Keep existing (gated, MVP-deferred) |
 
 ## 8. Domain Design
 
-```csharp
-namespace AccountingApi.Domain.Entities;
-
-public sealed class Supplier : TenantAuditableEntity, IAggregateRoot
-{
-    public string Code { get; private set; } = string.Empty;     // max 32
-    public string Name { get; private set; } = string.Empty;     // max 255
-    public string? TaxCode { get; private set; }                 // max 32
-    public string? Email { get; private set; }                   // max 255
-    public string? Phone { get; private set; }                   // max 32
-    public string? Address { get; private set; }                 // max 500
-    public string? BankAccount { get; private set; }             // max 50
-    public bool IsActive { get; private set; } = true;
-    public decimal? CurrentDebtAmount { get; private set; }      // null = no accounting data yet
-
-    public static Supplier Create(Guid tenantId, string code, string name, ...) → Supplier
-    public void Update(string name, ...) → void
-    public void UpdateAddress(string address) → void
-    public void ToggleActive() → void
-    public void UpdateCurrentDebt(decimal amount) → void         // called by accounting module
-}
+```
+Supplier : TenantAuditableEntity (existing + additions)
+  + SupplierType  : SupplierType   (enum: Organization=1, Individual=2)
+  + GroupName     : string?        (denormalized until SupplierGroup exists)
+  + IdNumber      : string?        (CCCD for Individual)
+  + IsCustomer    : bool           (syncs to Customer catalog when true)
+  + IsInternalObject : bool
 ```
 
-```csharp
-namespace AccountingApi.Domain.Errors;
+`TenantAuditableEntity` already provides: `Id`, `TenantId`, `CreatedAtUtc`, `UpdatedAtUtc`, `IsDeleted`.
 
-public static class SupplierErrors
-{
-    public static readonly Error NotFound =
-        Error.NotFound("supplier.not_found", "Supplier not found.");
-    public static readonly Error DuplicateCode =
-        Error.Conflict("supplier.duplicate_code", "Supplier code already exists.");
-    public static readonly Error HasTransactions =
-        Error.Conflict("supplier.has_transactions", "Cannot delete supplier with existing transactions.");
-}
+**SupplierType enum** (new file in `Domain/Enums/`):
 ```
+SupplierType { Organization = 1, Individual = 2 }
+```
+
+**SupplierErrors** (extend `Domain/Errors/SupplierErrors.cs`):
+- `HasTransactions` — already exists as `SupplierHasTransactionsError`
+- `NotFound` — already exists
+- `DuplicateCode` — already exists
 
 ## 9. Database Design
 
-Table: `suppliers`
+**Table: `suppliers`** (existing, extend with migrations)
 
-| Column | Type | Constraints | Notes |
+| Column | Type | Nullable | Notes |
 |---|---|---|---|
-| id | uuid | PK | |
-| tenant_id | uuid | NOT NULL | FK tenants.id; ITenantEntity |
-| code | varchar(32) | NOT NULL | unique per tenant (see index) |
-| name | varchar(255) | NOT NULL | |
-| tax_code | varchar(32) | NULL | |
-| email | varchar(255) | NULL | |
-| phone | varchar(32) | NULL | |
-| address | varchar(500) | NULL | |
-| bank_account | varchar(50) | NULL | |
-| is_active | bool | NOT NULL DEFAULT true | |
-| current_debt_amount | numeric(18,4) | NULL | denormalized; updated by accounting module |
-| is_deleted | bool | NOT NULL DEFAULT false | from ISoftDelete |
-| deleted_at_utc | timestamptz | NULL | |
-| deleted_by | uuid | NULL | |
-| created_at_utc | timestamptz | NOT NULL | from AuditableEntity |
-| created_by | uuid | NULL | |
-| updated_at_utc | timestamptz | NULL | |
-| updated_by | uuid | NULL | |
-| xmin | xid | — | Postgres concurrency token |
+| `id` | uuid | No | PK |
+| `tenant_id` | uuid | No | FK, part of composite index |
+| `code` | varchar(50) | No | Unique per tenant |
+| `name` | varchar(255) | No | — |
+| `supplier_type` | int | No | 1=Org, 2=Individual; default 1 |
+| `group_name` | varchar(100) | Yes | Denormalized for now |
+| `tax_code` | varchar(32) | Yes | — |
+| `id_number` | varchar(32) | Yes | CCCD (Individual only) |
+| `email` | varchar(255) | Yes | — |
+| `phone` | varchar(32) | Yes | — |
+| `address` | varchar(500) | Yes | — |
+| `bank_account` | varchar(50) | Yes | — |
+| `is_customer` | bool | No | Default false |
+| `is_internal_object` | bool | No | Default false |
+| `is_active` | bool | No | Default true |
+| `current_debt_amount` | numeric(18,4) | Yes | Maintained externally |
+| `is_deleted` | bool | No | Soft delete |
+| `created_at_utc` | timestamptz | No | — |
+| `updated_at_utc` | timestamptz | Yes | — |
+| `created_by` | uuid | Yes | — |
+| `updated_by` | uuid | Yes | — |
 
-Index: `UNIQUE (tenant_id, code) WHERE NOT is_deleted`
-
-EF query filter: combined tenant + soft-delete in `AppDbContext.OnModelCreating` via reflection (project convention — **do not add a second `HasQueryFilter`**).
+**Indexes:** `(tenant_id, code)` UNIQUE WHERE NOT deleted, `(tenant_id, is_active)`, `(tenant_id, is_deleted)` (via global filter).
 
 ## 10. Backend API Draft
 
-| Method | Route | Permission | Response | Handler |
+| Method | Path | Permission | Status | Notes |
 |---|---|---|---|---|
-| GET | /api/v1/suppliers | SupplierView | 200 PageResult\<SupplierListItemDto\> | GetSuppliersQueryHandler — default sort: UpdatedAt DESC, CreatedAt DESC |
-| GET | /api/v1/suppliers/{id} | SupplierView | 200 SupplierDetailDto / 404 | GetSupplierByIdQueryHandler |
-| POST | /api/v1/suppliers | SupplierCreate | 201 SupplierDetailDto / 409 | CreateSupplierCommandHandler |
-| PUT | /api/v1/suppliers/{id} | SupplierUpdate | 200 SupplierDetailDto / 404 / 409 | UpdateSupplierCommandHandler |
-| DELETE | /api/v1/suppliers/{id} | SupplierDelete | 204 / 404 / 409+transactionCount | DeleteSupplierCommandHandler |
-| PATCH | /api/v1/suppliers/{id}/toggle-active | SupplierUpdate | 200 SupplierDetailDto / 404 | ToggleSupplierActiveCommandHandler |
-| POST | /api/v1/suppliers/{id}/clone | SupplierCreate | 201 SupplierDetailDto / 404 | CloneSupplierCommandHandler |
-| PUT | /api/v1/suppliers/bulk-update-address | SupplierUpdateAddress | 200 { updatedCount } / 404 | BulkUpdateSupplierAddressCommandHandler |
-| GET | /api/v1/suppliers/export | SupplierExport | 200 .xlsx stream | ExportSuppliersQueryHandler — params: search, isActive, sortBy, sortDir; max 5000 rows |
+| GET | `/api/v1/suppliers` | `supplier.view` | Exists | Add `groupName` to filter params |
+| GET | `/api/v1/suppliers/summary` | `supplier.view` | **New** | Returns summary card data |
+| GET | `/api/v1/suppliers/{id}` | `supplier.view` | Exists | Extend response DTO |
+| GET | `/api/v1/suppliers/export` | `supplier.export` | Exists | — |
+| POST | `/api/v1/suppliers` | `supplier.create` | Extend | Add new fields |
+| PUT | `/api/v1/suppliers/{id}` | `supplier.update` | Extend | Add new fields |
+| DELETE | `/api/v1/suppliers/{id}` | `supplier.delete` | Exists | — |
+| POST | `/api/v1/suppliers/bulk-delete` | `supplier.bulkDelete` | **New** | Partial-success TBD (B3-Q3) |
+| PATCH | `/api/v1/suppliers/{id}/toggle-active` | `supplier.update` | Exists | — |
+| POST | `/api/v1/suppliers/{id}/clone` | `supplier.create` | Exists (deferred) | — |
+| PUT | `/api/v1/suppliers/bulk-update-address` | `supplier.updateAddress` | Exists (deferred) | — |
 
 ## 11. DTO Design
 
-```csharp
-// List item — returned by GET /suppliers
-record SupplierListItemDto(Guid Id, string Code, string Name, string? TaxCode,
-    string? Phone, string? Address, bool IsActive, decimal? CurrentDebtAmount,
-    DateTime CreatedAtUtc, DateTime? UpdatedAtUtc);
-
-// Detail — returned by GET/{id}, POST, PUT, clone
-record SupplierDetailDto(Guid Id, string Code, string Name, string? TaxCode,
-    string? Email, string? Phone, string? Address, string? BankAccount,
-    bool IsActive, decimal? CurrentDebtAmount,
-    DateTime CreatedAtUtc, DateTime? UpdatedAtUtc);
-
-// Pagination wrapper at API layer — resolves P3-C1
-record PageResult<T>(IReadOnlyList<T> Items, long Total, int Page, int PageSize);
-
-// Request bodies
-record CreateSupplierRequest(string Code, string Name, string? TaxCode,
-    string? Email, string? Phone, string? Address, string? BankAccount);
-record UpdateSupplierRequest(string Name, string? TaxCode,
-    string? Email, string? Phone, string? Address, string? BankAccount);
-record BulkUpdateAddressRequest(List<Guid> Ids, string Address);
+**SupplierListItemDto** (extend):
 ```
++ SupplierType, GroupName, IsCustomer, IsActive (already exists)
+```
+
+**SupplierDetailDto** (extend):
+```
++ SupplierType, GroupName, IdNumber, IsCustomer, IsInternalObject
+```
+
+**CreateSupplierCommand** / **UpdateSupplierCommand** (extend):
+```
++ SupplierType (required), GroupName?, IdNumber?, IsCustomer, IsInternalObject
+```
+
+**SupplierSummaryDto** (new):
+```
+TotalDebtAmount     : decimal   // sum of positive CurrentDebtAmount per tenant
+TotalCreditAmount   : decimal   // sum of negative CurrentDebtAmount (absolute)
+ActiveCount         : int
+InactiveCount       : int
+CalculatedAt        : DateTime
+```
+
+**BulkDeleteCommand** (new):
+```
+Ids : List<Guid>
+```
+**BulkDeleteResult**: `204 No Content` on success. `409 Conflict` with error detail if **any** ID has transactions — no deletions performed.
 
 ## 12. Validation Rules
 
-| Field | Rule | Error |
+| Field | Rule | Change from existing |
 |---|---|---|
-| Code | Required, MaxLength(32), unique per tenant (non-deleted) | supplier.duplicate_code |
-| Name | Required, MaxLength(255) | validation |
-| TaxCode | Optional, MaxLength(32) | validation |
-| Email | Optional, MaxLength(255), valid email | validation |
-| Phone | Optional, MaxLength(32) | validation |
-| Address | Optional, MaxLength(500) | validation |
-| BankAccount | Optional, MaxLength(50) | validation |
-| BulkUpdateAddress.Address | Required, NotEmpty (whitespace rejected), MaxLength(500) | validation |
-| BulkUpdateAddress.Ids | Required, MinCount(1) | validation |
+| Code | Required, max 50, unique per tenant | Max changed from 32 → 50 |
+| Name | Required, max 255 | Unchanged |
+| SupplierType | Required, valid enum value | New |
+| IdNumber | Max 32 | New (optional, Individual type recommended) |
+| GroupName | Max 100 | New |
+| TaxCode | Max 32 | Unchanged |
+| Email | Max 255, valid format if present | Unchanged |
+| Phone | Max 32 | Unchanged |
+| Address | Max 500 | Unchanged |
+| BankAccount | Max 50 | Unchanged |
+| BulkDelete.Ids | Not empty, max 100 IDs | New |
 
 ## 13. Business Rules
 
-1. **supplier-code-unique-per-tenant** — check `(TenantId, Code)` among non-deleted before create/update; return `SupplierErrors.DuplicateCode`
-2. **soft-delete** — `DeleteSupplierCommand` sets `IsDeleted=true`; global filter hides deleted rows
-3. **cannot-delete-with-transactions** — check related transaction tables; **Phase 7 stub: always returns 0** (transaction module does not exist yet — explicit `// TODO:` required)
-4. **tenant-isolation** — automatic via `ITenantEntity` global filter + `TenantInterceptor`; handler must not pass `tenantId` manually
-5. **Clone auto-code** — generate `{originalCode}-COPY`, increment suffix (`-COPY2`, `-COPY3`) until unique; cloned supplier always `IsActive = true` regardless of source
-6. **currentDebtAmount** — stored as `decimal?` in entity; null = no accounting data; negative values are valid (credit balance)
+| Rule | Implementation |
+|---|---|
+| Supplier code unique per tenant | EF unique constraint on `(tenant_id, code)` WHERE NOT deleted |
+| Soft delete | `ISoftDelete` + global query filter in `AppDbContext` |
+| No delete with active transactions | Handler checks transaction count before delete |
+| Bulk delete — fail-all transaction guard | If any ID has transactions → 409, no deletions performed |
+| IsCustomer sync | When `IsCustomer=true` → fire domain event `SupplierMarkedAsCustomer` (Phase 7 detail) |
+| Inactive supplier filtering | `IsActive` filter in list query (already implemented) |
+| Negative debt display | Backend returns raw value; frontend applies formatting |
 
 ## 14. Multi-tenant Rules
-- `TenantId` stamped on insert by `TenantInterceptor` via `ICurrentTenantAccessor`
-- All queries filtered by `TenantId` via `AppDbContext` global query filter
-- Bulk address update: `WHERE id = ANY(@ids) AND tenant_id = @tenantId` — filter ensures cross-tenant IDs are silently ignored (return `updatedCount` < requested)
+
+- All queries filtered by `TenantId` via EF global query filter (existing).
+- Supplier code uniqueness is per-tenant.
+- `BulkDelete` and `Summary` endpoints inherit tenant context via `ICurrentTenantAccessor`.
+- No cross-tenant lookups.
 
 ## 15. Authentication & Authorization
 
-```csharp
-// Add to Permissions.cs + Permissions.All
-public const string SupplierView               = "supplier.view";
-public const string SupplierCreate             = "supplier.create";
-public const string SupplierUpdate             = "supplier.update";
-public const string SupplierDelete             = "supplier.delete";
-public const string SupplierExport             = "supplier.export";
-public const string SupplierUpdateAddress      = "supplier.updateAddress";
-public const string SupplierCreatePurchaseVoucher = "supplier.createPurchaseVoucher";
-```
+| Endpoint | Permission constant |
+|---|---|
+| All GET | `Permissions.SupplierView` |
+| POST create | `Permissions.SupplierCreate` |
+| PUT update | `Permissions.SupplierUpdate` |
+| DELETE / bulk-delete | `Permissions.SupplierDelete` / `Permissions.SupplierBulkDelete` |
+| toggle-active | `Permissions.SupplierUpdate` |
+| export | `Permissions.SupplierExport` |
+| bulk-update-address | `Permissions.SupplierUpdateAddress` |
+
+Add to `Permissions.cs`: `SupplierBulkDelete = "supplier.bulkDelete"` (may already exist — verify).
 
 ## 16. Error Handling
 
 | Scenario | HTTP | Error Code |
 |---|---|---|
-| Supplier not found | 404 | supplier.not_found |
-| Duplicate code | 409 | supplier.duplicate_code |
-| Has transactions | 409 | supplier.has_transactions + `transactionCount` |
-| Validation failure | 400 | validation.* (FluentValidation pipeline) |
-| Unauthorized / Forbidden | 401/403 | auth.* / permission.* |
-
-Delete 409 body (P3-Q3 pending confirmation):
-```json
-{ "code": "supplier.has_transactions", "message": "...", "transactionCount": 3 }
-```
+| Supplier not found | 404 | `supplier.not_found` |
+| Duplicate code | 409 | `supplier.duplicate_code` |
+| Has transactions (single delete) | 409 | `supplier.has_transactions` |
+| Validation failure | 400 | `validation_error` |
+| Bulk delete — any has transactions | 409 | `supplier.bulk_has_transactions` |
 
 ## 17. Logging
-- `LoggingBehavior` logs all commands/queries automatically
-- Key log fields: `supplierId`, `supplierCode`, `tenantId`, `userId`
-- `PerformanceBehavior` alerts on slow queries (existing threshold)
+
+Existing `LoggingBehavior` in MediatR pipeline logs all commands. No additional logging needed.
 
 ## 18. Performance Considerations
-- Additional index: `(tenant_id, is_deleted, is_active)` for filtered list queries
-- `currentDebtAmount` denormalized → no JOIN on list
-- Export: stream response; custom max rows = 5000 (overrides `PaginationRequest.MaxPageSize`)
-- Bulk address: single SQL `UPDATE ... WHERE id = ANY(...)` — not N individual updates
+
+- Summary query: single SQL `GROUP BY tenant_id` or aggregate over indexed `current_debt_amount` column.
+- Bulk delete: max 100 IDs per request; use `WHERE id = ANY(@ids)` in a single query.
+- List query already uses `AsNoTracking` and server-side pagination.
 
 ## 19. Security Considerations
-- Tenant isolation: automatic via query filter — no explicit `WHERE tenantId =` needed in handlers
-- Bulk address: silently skips IDs not belonging to current tenant (via filter)
-- Soft-deleted code reuse: allowed — unique index is `WHERE NOT is_deleted`
+
+- All endpoints require `RequireAuthorization()` — no anonymous access.
+- Tenant isolation enforced at DB query filter level + interceptor.
+- `BulkDelete` validates each ID belongs to current tenant before deleting.
 
 ## 20. Backend Decision Log
 
 | # | Decision | Reason |
 |---|---|---|
-| D1 | `Supplier : TenantAuditableEntity` | Gets audit + soft-delete + tenant for free |
-| D2 | `currentDebtAmount` stored nullable | No transaction module; avoids JOIN on list; updated by accounting later |
-| D3 | `PageResult<T>` wrapper at API layer | Maps `TotalCount` → `Total` → serializes as `"total"` per CLAUDE.md contract |
-| D4 | `GetSuppliersQuery` accepts `SortDir: string`, converts to bool internally | Frontend uses `sortDir`; `PaginationRequest` uses `SortDescending` |
-| D5 | "Has transactions" check stubbed in Phase 7 | Transaction module does not exist |
-| D6 | Clone code = `{code}-COPY` (increment until unique); IsActive always true | Code: simple & deterministic. IsActive=true: avoid creating inactive by accident (MISA behavior) |
-| D7 | Export max rows = 5000 (not 200) | Accounting export must include full dataset |
-| D8 | Export package = ClosedXML | MIT license — no commercial restrictions |
-| D9 | DELETE 409 body includes `transactionCount` | Frontend shows count in error dialog per Phase 1 UX requirement |
-| D10 | Default sort: `UpdatedAt DESC NULLS LAST, CreatedAt DESC` | Most recently modified first — consistent with MISA convention |
-| D11 | Clone: IsActive always = true (not copied from source) | Prevent accidental inactive clone; user can toggle separately |
-| D12 | BulkUpdateAddress: address must be non-empty | Bulk operation intent is to set address, not clear it; clear via Edit form |
-| D13 | Export params: same as list (search, isActive, sortBy, sortDir), max 5000 rows | Export "current filter" per Phase 1 confirmation |
+| 1 | Extend existing entity (not replace) | Core CRUD already live; avoid breaking migration |
+| 2 | Denormalize `GroupName` as string | No SupplierGroup entity exists; avoids blocking scope |
+| 3 | Keep Clone + BulkUpdateAddress as gated endpoints | Already implemented; remove only if explicitly requested |
+| 4 | Fail-all for bulk-delete | User confirmed: 409 if any ID has transactions, no partial deletions |
+| 5 | Use 50 char max for Code | PDR is authoritative over existing validator |
 
 ## 21. Acceptance Criteria
-- [ ] GET /api/v1/suppliers returns `{ items, total, page, pageSize }` (not `totalCount`)
-- [ ] No `sortBy` → default order: UpdatedAt DESC NULLS LAST, then CreatedAt DESC
-- [ ] `?isActive=true/false` filter works; omit = all records
-- [ ] `?sortBy=code|name|currentDebtAmount|updatedAt|createdAt` + `?sortDir=asc|desc`
-- [ ] POST returns 409 `supplier.duplicate_code` on duplicate code within tenant
-- [ ] DELETE returns 409 `{ ..., transactionCount }` when supplier has transactions
-- [ ] PATCH /toggle-active flips IsActive correctly
-- [ ] POST /{id}/clone creates new supplier with auto-generated unique code; `isActive = true` always
-- [ ] PUT /bulk-update-address rejects empty address (400); updates address for all matching tenant IDs
-- [ ] GET /export accepts same params as list; returns valid .xlsx; max 5000 rows
-- [ ] All endpoints isolated by tenant; cross-tenant access returns 404
+
+- [ ] `supplier.view` user can list, search, filter, sort, paginate, and get summary.
+- [ ] `supplier.create` user can create supplier with all new fields.
+- [ ] `supplier.update` user can update all fields including new ones.
+- [ ] `supplier.delete` user can delete; blocked with 409 if has transactions.
+- [ ] `supplier.bulkDelete` user can bulk-delete; suppliers with transactions are skipped.
+- [ ] `supplier.export` user can export current filtered list.
+- [ ] Tenant isolation: no cross-tenant data leakage.
+- [ ] Soft-deleted suppliers do not appear in any list/detail response.
 
 ## 22. Unclear / Incomplete Items
 
-### 1. Missing Information
-
-| ID | Info | Needed For | Impact | Required Before Next Phase? |
-|---|---|---|---|---|
-| P3-M1 | Excel export package (EPPlus / ClosedXML) not in Directory.Packages.props | Phase 6 implementation | Blocks export handler coding | No (Phase 6) |
-
-### 3. Conflicts — Resolved
-
-| ID | Topic | Resolution |
-|---|---|---|
-| P3-C1 | `TotalCount` vs `total` | `PageResult<T>` wrapper DTO at API layer — D3 |
-| P3-C2 | `SortDescending: bool` vs `sortDir: string` | Accept string in query, convert internally — D4 |
-| P3-C3 | `MaxPageSize 200` vs config 500 | `GetSuppliersQuery` overrides to 500; export uses 5000 — D7 |
-
-### 4. Assumptions
-
-| ID | Assumption | Risk | Confirm? |
+| ID | Item | Blocking? | Must Resolve Before Phase 4? |
 |---|---|---|---|
-| P3-A1 | `currentDebtAmount` stored as nullable (null until accounting module exists) | Low | No |
-| P3-A2 | "Has transactions" returns 0 (stub) in Phase 7 | Medium — testers cannot verify delete block | Document in Phase 7 summary |
-
-### 5. Questions for User Confirmation
-
-| ID | Question | Options | Recommended | Blocking? |
-|---|---|---|---|---|
-| P3-Q2 | Excel export package | EPPlus (commercial+free tier) / ClosedXML (MIT) | ClosedXML | **Resolved: ClosedXML** |
-| P3-Q3 | Delete 409 body include `transactionCount`? | Yes / No | Yes | **Resolved: Yes** |
+| B3-Q4 | Code max length 50 vs 32 conflict | No | No |
 
 ## 23. Definition of Done
-- [x] Backend Input Analysis completed
-- [x] Business Capability Extraction (13 capabilities)
-- [x] Backend Feature Comparison table
-- [x] Confirmed Backend Scope defined
-- [x] Domain entity designed (`Supplier : TenantAuditableEntity`)
-- [x] Database schema designed (20 columns, unique index)
-- [x] 9 API endpoints drafted
-- [x] DTOs designed (SupplierListItemDto, SupplierDetailDto, PageResult\<T\>)
-- [x] Validation rules documented
-- [x] 6 business rules documented
-- [x] 7 permission constants listed
-- [x] Error handling documented
-- [x] 3 conflicts identified and resolved
-- [x] User confirms P3-Q2 (ClosedXML) and P3-Q3 (transactionCount in 409 body)
+
+- [x] Existing implementation documented and assessed
+- [x] Entity gaps identified against UI screenshots
+- [x] Missing endpoints identified (summary, bulk-delete)
+- [x] DTO extensions designed
+- [x] Validation rules updated
+- [x] Business rules documented
+- [x] Open questions logged with blocking status
+- [x] No source code created or modified
