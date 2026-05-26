@@ -181,8 +181,10 @@ The workflow has exactly **13 phases** in strict order:
 - Phase 2 (Frontend UI Pixel Analysis) extracts layout, spacing, design tokens early - before backend design, so backend knows data requirements.
 - Phase 3 (Backend Basic Design) uses both Frontend Basic Design AND UI Pixel Analysis as input.
 - Phase 4 (Backend API Contract Review) is the hard gate before all planning and coding.
+- Phase 5 (Frontend Implementation Plan) and Phase 6 (Backend Implementation Plan) are independent of each other — they may run in parallel. Default workflow runs them sequentially; to parallelize, user starts two separate workflow sessions after Phase 4 is approved.
 - Phase 7 (Backend Coding) before Phase 8 (Frontend Coding) - backend API must exist before frontend calls it.
 - Phase 9 (Frontend Visual Review) after coding, requires actual screenshots.
+- Phase 10 (Backend Test) and Phase 11 (Frontend Test) are independent of each other — same parallel opportunity as Phase 5/6.
 - Phase 13 (Final Feature Review) closes the feature.
 
 **Mandatory order rules:**
@@ -327,16 +329,20 @@ When the user runs `/fullstack-feature-workflow {feature}`, AI must:
 - `06-backend-implementation-plan.md` exists and Review Status must be `Approved`.
 - **User must explicitly confirm backend coding** - AI must not begin Phase 7 without:
   - `confirm backend coding`
+  - If this confirmation is missing, AI must request it in the current conversation — no workflow re-invocation required.
 - No Open item with `Blocking? = Yes` in `issues.md`.
 
 ### Gate before Phase 8 (Frontend Coding)
 - Phase 7 Review Status in `workflow-status.md` must be `Approved`.
+  - **Exception:** If `workflow_mode = ui_only`, this condition is waived — Phase 7 is skipped.
 - `01-frontend-basic-design.md` exists and Review Status must be `Approved`.
 - `02-frontend-ui-pixel-analysis.md` exists and Review Status must be `Approved`.
 - `04-api-contract-review.md` is `Approved` with `Blocking Issues: No`.
+  - **Exception:** If `workflow_mode = ui_only`, this condition is waived — frontend coding uses mock data with no real API contract.
 - `05-frontend-implementation-plan.md` exists and Review Status must be `Approved`.
 - **User must explicitly confirm frontend coding** - AI must not begin Phase 8 without:
   - `confirm frontend coding`
+  - If this confirmation is missing, AI must request it in the current conversation — no workflow re-invocation required.
 - No Open item with `Blocking? = Yes` in `issues.md`.
 
 ### Gate before Phase 9 (Frontend Visual Review)
@@ -1129,7 +1135,7 @@ User Confirmation Required: Yes | No
 **Input:**
 - `docs/features/{feature-folder}/01-frontend-basic-design.md`
 - `docs/features/{feature-folder}/02-frontend-ui-pixel-analysis.md`
-- `docs/features/{feature-folder}/04-api-contract-review.md`
+- `docs/features/{feature-folder}/04-api-contract-review.md` — **Exception:** If `workflow_mode = ui_only`, this file does not exist. Use mock API contract: all API calls return hardcoded data; no real endpoints required.
 - `docs/features/{feature-folder}/05-frontend-implementation-plan.md`
 - `docs/features/{feature-folder}/ui-spec/design-tokens.md` if exists
 - `docs/features/{feature-folder}/ui-spec/layout-measurement.md` if exists
@@ -1456,6 +1462,17 @@ AI must:
 
 If user says `fix all visual issues`, AI may also fix Medium and Low issues but must prioritize Critical/High.
 
+### Visual Fix Loop Escalation
+
+AI must track fix cycles for Phase 9 visual issues. After **3 fix cycles** on a Critical or High issue without resolving it:
+1. Stop attempting to fix that issue.
+2. Mark it as `Escalated` in `visual-review-issues.md`.
+3. Report to user: the issue ID, what was attempted (3 cycles of changes), and why it cannot be auto-resolved.
+4. Require user decision: accept as-is (downgrade to Medium), defer, or manually fix and re-screenshot.
+5. Do not block Phase 11/12 for `Escalated` issues that user has explicitly accepted.
+
+**Fix cycle** = one round of: read visual issues → modify frontend code → ask user for new actual screenshots → AI reviews new screenshots.
+
 ---
 
 ## 18. Phase 10 Rules - Backend Test
@@ -1630,7 +1647,18 @@ User Confirmation Required: Yes | No
 
 **Purpose:** Review the complete feature end-to-end before closing.
 
-**Input:** All previous phase outputs + workflow-status.md + issues.md + visual-review-issues.md + source code.
+**Input:**
+- `workflow-status.md` — phase completion status and approval history
+- `issues.md` — all open, resolved, and deferred issues
+- `visual-review-issues.md` — visual mismatch status
+- `07-backend-coding-summary.md` — what backend was built
+- `08-frontend-coding-summary.md` — what frontend was built
+- `09-frontend-visual-review.md` — visual review result
+- `10-backend-test-plan.md` — test scope and results
+- `11-frontend-test-plan.md` — test scope and results
+- `12-integration-test-plan.md` — integration test result
+
+Do **not** re-read full design docs (01–06) unless a specific review question requires it — the summaries and tracking files contain sufficient information for final review.
 
 **Output:** `docs/features/{feature-folder}/13-final-feature-review.md`
 
@@ -1912,6 +1940,14 @@ answer item {ID}: {your answer}
 confirm item {ID}: {decision}
 ```
 
+To answer and immediately continue to the next gate check without re-invoking the workflow:
+
+```
+answer item {ID}: {your answer} and continue
+```
+
+AI will update `issues.md`, check remaining blocking items, and if none remain, report that the phase is ready for approval.
+
 ### Confirm backend coding (required before Phase 7)
 
 ```
@@ -2182,6 +2218,12 @@ docs/features/{feature-folder}/issues.md
 - If user answers an issue, AI must update `issues.md`.
 - AI must not hide uncertainty in prose without adding it to `issues.md`.
 
+**Archiving rule (cost control):**
+- When `issues.md` exceeds 50 rows total, AI must archive all `Resolved` and `Deferred` items into `docs/features/{feature-folder}/issues-archive.md`.
+- Keep only `Open` and `Answered` items in the main `issues.md`.
+- Maintain the Summary count table at the top of `issues.md` to reflect totals across both files.
+- Add a reference at the bottom of `issues.md`: `(... {n} archived items — see issues-archive.md)`.
+
 ---
 
 ## 30. Visual Review Issues File Rule
@@ -2216,7 +2258,7 @@ docs/features/{feature-folder}/visual-review-issues.md
 
 **Allowed Severity:** `Critical` / `High` / `Medium` / `Low`
 
-**Allowed Status:** `Open` / `Fixed` / `Resolved` / `Deferred`
+**Allowed Status:** `Open` / `Fixed` / `Resolved` / `Deferred` / `Escalated`
 
 **Rules:**
 - Critical and High visual issues block approval of Phase 9.
@@ -2239,7 +2281,13 @@ AI must:
 5. If open blocking issues exist, refuse approval and list them.
 6. If no open blocking issues exist, set Review Status to `Approved` in `workflow-status.md`.
 7. Update `Approved At` timestamp.
-8. Tell user to run `/fullstack-feature-workflow {feature}` to continue.
+8. Set `Waiting for user review: No` in `workflow-status.md`.
+9. Detect the next eligible phase by checking phase gates.
+10. If the next phase is a documentation phase (1–6, 9–13): report its name and prompt `Run /fullstack-feature-workflow {feature} to begin Phase {n} — {phase name}.`
+11. If the next phase requires coding confirmation (Phase 7 or 8): request the confirmation in the current conversation — do not require workflow re-invocation.
+    - For Phase 7: `Type confirm backend coding to begin Phase 7 — Backend Coding.`
+    - For Phase 8: `Type confirm frontend coding to begin Phase 8 — Frontend Coding.`
+12. If no more phases remain: report that the feature is complete.
 
 **AI must not approve a phase with unresolved blocking issues.**
 
@@ -2635,6 +2683,13 @@ Before generating a phase output, AI must read **only the minimum necessary** pr
 | 12 | 04-api-contract-review.md, 09-frontend-visual-review.md | earlier design docs |
 | 13 | workflow-status.md, issues.md, visual-review-issues.md | all source docs |
 
+**Phase 4 size guard:** If any of the three input docs (01, 02, 03) exceeds 300 lines, AI must read only the following sections from each:
+- From `01-frontend-basic-design.md`: `## Confirmed Frontend Scope`, `## Updated Frontend API Needs`, `## Unclear / Incomplete Items`
+- From `02-frontend-ui-pixel-analysis.md`: `## Grid / Table Specification`, `## Design Tokens`
+- From `03-backend-basic-design.md`: `## Confirmed Backend Scope`, `## Backend API Draft Based on Confirmed Scope`
+
+Do a full read only when a specific section is needed to resolve a gap in the API contract review.
+
 **Rule:** Do not read backend implementation details when working on a frontend phase, and vice versa.
 
 ---
@@ -2745,37 +2800,16 @@ AI must not copy content from `feature-config-guide.md` into any phase document,
 
 ### Rule 7 - Summarize, do not repeat
 
-In a `## Feature Config Summary` section within a phase document, AI must include only the fields relevant to that phase - not the full config. Maximum 10 lines.
+In a `## Feature Config Summary` section within a phase document, AI must include only the fields relevant to that phase — not the full config. Maximum 10 lines.
 
-### Rule 8 - Compact final response
+**Cost reduction:** When `cost_optimization.enabled: true`:
+- Phase 1–2: Full summary (up to 10 lines) — these phases need full context.
+- Phase 3–4: Reduce to 5 lines (feature, name_vi, workflow_mode, entities, permissions).
+- Phase 5 onwards: Reduce to 3 lines (feature key, name_vi, workflow_mode only). If no config field changed since Phase 4, replace the section with: `See config.yaml — no changes since Phase 4.`
 
-After each phase, the final chat response must use the compact format from Section 22. Do not repeat phase document content in chat unless user explicitly requests it.
+### Rules 8–12 — See Section 37
 
-### Rule 9 - Delta updates
-
-When a phase document already exists and needs updating (due to changes requested or issue resolution):
-- Do not rewrite the entire document.
-- Update only the affected sections.
-- Summarize changes in one line at the end: `Updated sections: X, Y`.
-
-### Rule 10 - Table row limits
-
-Respect `cost_optimization.max_table_rows` (default 20). When a table exceeds this limit:
-- Show the first N rows.
-- Add: `(... {n} more rows - see full document)`.
-
-### Rule 11 - Document line limits
-
-Respect `cost_optimization.max_doc_lines` (default 250). When a phase document would exceed this:
-- Truncate lower-priority sections.
-- Keep: status block, required tables, blocking issues, definition of done.
-- Add: `(... section truncated - expand on request)`.
-
-### Rule 12 - Expand on request only
-
-When a section is truncated or summarized and the user asks for more detail:
-- Expand only that specific section.
-- Do not regenerate the entire document.
+Output format, delta updates, table row limits, document line limits, and expand-on-request behavior are governed by **Section 37 (Cost Optimization Rules)**. Those rules are not repeated here to avoid duplication.
 
 ### Rule 13 - No guide content in config
 
