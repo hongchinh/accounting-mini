@@ -31,16 +31,16 @@ When this command is received, AI must execute the following steps **in order**,
 2. Search for a matching config in `docs/features/*/config.yaml`.
 3. Match config by field `feature: {feature}` - or by folder name if no match.
 4. Use the matched folder as the feature folder.
-5. Read `config.yaml` - only the fields needed for the current phase (see Section 42).
+5. Read `config.yaml` - only the fields needed for the current phase (see Section 42). Read `auto_approve` field here.
 6. Inspect input folders.
 7. Read or create `workflow-status.md`.
 8. Read or create `issues.md`.
 9. Read or create `visual-review-issues.md` if `visual_review.enabled: true` in config.
 10. Detect the next incomplete phase using `workflow-status.md` (not only file existence).
-11. Run **only that phase**.
+11. Run that phase.
 12. Update `workflow-status.md`, `issues.md`, and `visual-review-issues.md` as needed.
-13. Stop and wait for user review.
-14. Do not run the next phase until previous phase is explicitly approved.
+13. **If `auto_approve: false` (default):** Stop and wait for user review. Do not run the next phase until previous phase is explicitly approved.
+14. **If `auto_approve: true`:** Auto-approve the phase. If the phase has no unclear items, immediately continue to the next phase (repeat from step 10). If the phase has unclear items, output a Q&A table and stop. After user answers in one reply, continue from step 10 automatically.
 
 If multiple configs match, ask the user to clarify which feature to run.
 
@@ -85,6 +85,7 @@ language: en
 
 workflow_mode: full
 documentation_level: standard
+auto_approve: false
 
 project:
   backend: accounting_api
@@ -260,28 +261,43 @@ Phase 9 (Frontend Visual Review) is complete only if actual implementation scree
 
 When the user runs `/fullstack-feature-workflow {feature}`, AI must:
 
-1. Find and read `config.yaml`.
+1. Find and read `config.yaml`. Read `auto_approve` field.
 2. Determine the feature folder.
 3. Read `workflow-status.md` if it exists.
 4. Read `issues.md` if it exists.
 5. Read `visual-review-issues.md` if relevant.
 6. Check the status of each phase in `workflow-status.md` first, then verify output files.
 7. Identify the **earliest incomplete phase** (Status != Completed, or Review Status != Approved).
-8. Check all phase gate conditions for that phase.
+8. Check all phase gate conditions for that phase (waived if `auto_approve: true` — see Section 7).
 9. If gate conditions are not met, report which gate is blocking.
-10. If gate conditions are met, run **only that phase**.
+10. If gate conditions are met, run that phase.
 11. Update tracking files.
-12. Report the result and next step.
-13. Stop and wait for user review.
+12. Report the result.
+13. **If `auto_approve: false`:** Stop and wait for user review.
+14. **If `auto_approve: true`:** Auto-approve. If no unclear items → repeat from step 7 for the next phase. If unclear items exist → output Q&A table, stop. After user answers → repeat from step 7.
 
-**Example:**
+**Example (auto_approve: false):**
 - Phase 1 Completed + Approved -> skip.
 - Phase 2 Completed + Approved -> skip.
-- Phase 3 Not Started -> **check gate, then run Phase 3**.
+- Phase 3 Not Started -> check gate, run Phase 3, **stop and wait**.
+
+**Example (auto_approve: true):**
+- Phase 1 Not Started -> run Phase 1 → auto-approve → run Phase 2 → auto-approve → run Phase 3 → … continue until all phases done or a Q&A table or blocking exception (Phase 9 screenshot) is hit.
 
 ---
 
 ## 7. Phase Gates
+
+**Auto-approve mode:** If `auto_approve: true` in `config.yaml`, all gate conditions below are waived **except**:
+- Phase 9 screenshot requirement — physical input, cannot be auto-resolved; AI must still block and wait.
+- Config missing or multiple configs match — AI cannot proceed without user input.
+
+In auto-approve mode:
+- AI does not wait for `approve phase {n}` between phases.
+- AI does not wait for `confirm backend coding` or `confirm frontend coding` before Phase 7/8.
+- Unclear items within a phase are compiled into a **single Q&A table** at the end of that phase.
+- After the user answers the Q&A table in one reply, the next phase starts automatically.
+- If a phase has **no unclear items**, AI proceeds immediately to the next phase without stopping.
 
 ### Gate before Phase 2 (Frontend UI Pixel Analysis)
 - `01-frontend-basic-design.md` must exist.
@@ -1830,6 +1846,20 @@ When `documentation_level = detailed` in config.yaml, or user explicitly request
 
 ## 23. User Confirmation Rules
 
+### If `auto_approve: true` in config
+
+All confirmation requirements are waived **except**:
+- Feature config is missing → must ask user to create it.
+- Multiple config files match → must ask which one.
+- Phase 9 actual screenshots are missing → must block and ask user to provide them.
+
+For all other cases (Phase 7/8 coding confirmation, Phase 4 unresolved questions, API contract `Changes Required`):
+- AI must NOT stop to ask for confirmation.
+- AI must record unclear items in a Q&A table and present it to the user.
+- After user answers in one reply, AI continues automatically.
+
+### If `auto_approve: false` (default)
+
 ### AI must ask for confirmation if:
 - Feature config is missing -> ask user to create config using template.
 - Multiple config files match the command -> ask which one.
@@ -1903,7 +1933,7 @@ Example:
 /fullstack-feature-workflow suppliers
 ```
 
-Normal flow:
+Normal flow (`auto_approve: false`):
 1. AI finds `docs/features/*/config.yaml` matching `feature: suppliers`.
 2. AI loads the feature folder.
 3. AI checks input folders: `images/`, `references/images/`, `references/markdown/`, `actual/`.
@@ -1913,7 +1943,17 @@ Normal flow:
 7. AI detects the next incomplete phase.
 8. AI runs that phase only.
 9. AI updates `workflow-status.md`, `issues.md`, `visual-review-issues.md`.
-10. AI stops and reports result.
+10. AI stops and reports result. User must run `/fullstack-feature-workflow suppliers` again for next phase.
+
+Auto flow (`auto_approve: true`):
+1–6. Same as above.
+7. AI detects the next incomplete phase.
+8. AI runs that phase.
+9. AI updates tracking files.
+10. If no unclear items → immediately loop back to step 7 and run next phase.
+11. If unclear items exist → output Q&A table in chat, stop. After user answers → loop back to step 7.
+12. If Phase 9 screenshot missing → stop and request screenshots. After screenshots provided → loop back to step 7.
+13. Flow ends when all phases are complete or a blocking exception cannot be resolved.
 
 ### Approval
 
@@ -2270,6 +2310,33 @@ docs/features/{feature-folder}/visual-review-issues.md
 ---
 
 ## 31. Approval Rule
+
+### Auto-approve mode (`auto_approve: true`)
+
+After completing each phase, AI must:
+1. Immediately set Review Status to `Approved` in `workflow-status.md`.
+2. Set `Approved At` to current timestamp.
+3. Set `Waiting for user review: No`.
+4. If the phase has **no unclear items**: proceed to the next eligible phase automatically.
+5. If the phase has **unclear items**:
+   - Compile all items into a single Q&A table in the chat response.
+   - Stop and wait for user to answer.
+   - After user answers in one reply: update `issues.md`, then run the next phase automatically.
+6. Exception — Phase 9 missing screenshots: set status to `Blocked`, stop, request screenshots. Do not auto-approve.
+
+**Q&A table format (auto_approve mode):**
+
+```markdown
+## Questions before continuing
+
+| ID | Phase | Question | Context | Options | Recommended |
+|---|---|---|---|---|---|
+| P1-Q1 | 1 | ... | ... | A / B | A |
+```
+
+After user answers all rows, AI continues to the next phase without waiting for `approve phase {n}`.
+
+### Standard mode (`auto_approve: false`)
 
 When user says `approve phase {number}` or `ok phase {number}`:
 
@@ -2765,7 +2832,7 @@ AI reads only the config fields relevant to the current phase:
 
 | Phase | Config fields to read |
 |---|---|
-| 1 | feature, folder, name_vi, workflow_mode, input, cost_optimization, visual_review, entities, permissions, capabilities, business_rules |
+| 1 | feature, folder, name_vi, workflow_mode, auto_approve, input, cost_optimization, visual_review, entities, permissions, capabilities, business_rules |
 | 2 | feature, folder, name_vi, cost_optimization, visual_review, input |
 | 3 | feature, folder, name_vi, cost_optimization, entities, business_rules, backend |
 | 4 | feature, folder, name_vi, cost_optimization, api, entities, permissions |
@@ -2865,4 +2932,68 @@ Use the least powerful model that can handle each phase to reduce cost and incre
 - Never use `haiku` for multi-source analysis phases (1, 2, 3, 4, 9, 13).
 - When in doubt about model, use `sonnet`.
 - Model selection applies per-task, not per-phase. A phase may use multiple models across its task groups.
+
+---
+
+## 44. Auto-Approve Mode
+
+### Activation
+
+Set in `config.yaml`:
+
+```yaml
+auto_approve: true
+```
+
+Default is `false` when field is absent.
+
+### Behavior summary
+
+| Behavior | auto_approve: false | auto_approve: true |
+|---|---|---|
+| Wait for `approve phase {n}` | Yes | No — auto-approve after each phase |
+| Wait for `confirm backend coding` | Yes | No — begin Phase 7 automatically |
+| Wait for `confirm frontend coding` | Yes | No — begin Phase 8 automatically |
+| Stop on Phase 4 `Changes Required` | Yes | No — resolve and continue |
+| Q&A for unclear items | Per phase, blocks progress | Compiled into one table, then continue |
+| Phase 9 screenshot missing | Block | Block (same — cannot auto-resolve) |
+| Config missing / multiple match | Block | Block (same — cannot auto-resolve) |
+
+### Q&A table rule (auto_approve mode)
+
+When a phase produces unclear items, AI must:
+
+1. Complete the phase document with all sections.
+2. Set phase status to `Completed` (not `Blocked`) unless a truly unresolvable conflict exists.
+3. At the end of the chat response, output a **single Q&A table** for all unclear items:
+
+```markdown
+## Questions before continuing
+
+Please answer all rows in one reply. AI will continue automatically after receiving your answers.
+
+| ID | Phase | Question | Context | Options | Recommended |
+|---|---|---|---|---|---|
+| P1-Q1 | 1 | ... | ... | A / B | A |
+| P3-Q1 | 3 | ... | ... | Yes / No | Yes |
+```
+
+4. After user answers, AI must:
+   - Update `issues.md` with the answers.
+   - Update any affected phase documents if the answer changes content.
+   - Proceed to the next phase automatically.
+
+### Exceptions — always block even with auto_approve
+
+- `Phase 9 — missing actual screenshots`: AI must stop, display screenshot instructions, and wait.
+- `Config file missing`: AI must stop and ask user to create it.
+- `Multiple config files match feature key`: AI must stop and ask user to clarify.
+- `3-cycle escalation (Phase 7/8)`: AI must stop and report the escalated issue to user.
+
+### Interaction with other rules
+
+- Section 7 (Phase Gates): gate conditions are waived in auto_approve mode (see gate section header).
+- Section 23 (User Confirmation Rules): most confirmations are waived (see that section).
+- Section 24 (Safety Rules): file path isolation rules and code boundaries still apply — auto_approve does not bypass safety rules about file placement or EF entity exposure.
+- Section 31 (Approval Rule): auto-approval logic described there governs timing and Q&A table format.
 
