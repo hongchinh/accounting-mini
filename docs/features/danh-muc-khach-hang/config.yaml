@@ -1,0 +1,115 @@
+role: web
+feature: danh-muc-khach-hang
+folder: customers
+name_vi: Danh mục khách hàng
+name_en: Customer Management
+output_type: markdown
+language: vi
+
+workflow_mode: full
+documentation_level: standard
+
+project:
+  backend: accounting_api
+  frontend: accounting_web
+
+input:
+  current_ui_images: docs/features/danh-muc-khach-hang/input/images
+  reference_markdown: docs/features/danh-muc-khach-hang/input/markdown
+  actual_ui_images: docs/features/danh-muc-khach-hang/actual
+
+cost_optimization:
+  enabled: true
+  max_output: concise
+  avoid_repeating_previous_docs: true
+  summarize_existing_content: true
+  only_expand_when_requested: true
+  max_table_rows: 20
+  max_doc_lines: 250
+
+visual_review:
+  enabled: true
+  level: strict
+  require_actual_screenshot: true
+  block_on_critical: true
+  block_on_high: true
+
+frontend:
+  feature_dir: accounting_web/src/features/customers
+  route_path: /categories/customers
+  table_library: AG Grid
+  mock_first: true
+
+backend:
+  api_base_path: /api/v1
+  tenant_strategy: jwt_claim_or_header
+  tenant_header: X-Tenant-Id
+  standard_response: true
+  soft_delete: true
+  audit_fields: true
+
+entities:
+  - Customer
+
+permissions:
+  - customer.view
+  - customer.create
+  - customer.update
+  - customer.delete
+  - customer.bulkDelete
+  - customer.export
+  - customer.updateAddress
+  - customer.pay
+  - customer.createPurchaseVoucher
+
+capabilities:
+  - customer-list
+  - customer-search
+  - customer-filter
+  - customer-sort
+  - customer-pagination
+  - customer-create
+  - customer-update
+  - customer-delete
+  - customer-bulk-delete
+  - customer-export
+  - customer-update-address
+  - customer-summary
+  - customer-pay
+  - customer-purchase-voucher
+
+business_rules:
+  - customer-code-unique-per-tenant
+  - soft-delete
+  - cannot-delete-with-transactions
+  - tenant-isolation
+  - negative-debt-display
+
+api:
+  base_path: /api/v1
+  resource: customers
+
+list_query:
+  page_index_base: 1
+  default_page_size: 100
+  max_page_size: 500
+  searchable_fields:
+    - customerCode
+    - customerName
+    - taxCode
+    - phone
+    - email
+    - address
+  sortable_fields:
+    - supplierCode
+    - supplierName
+    - currentDebtAmount
+    - updatedAt
+    - createdAt
+
+commands:
+  frontend_dev: npm run dev
+  frontend_build: npm run build
+  frontend_test: npm run test
+  backend_build: dotnet build
+  backend_test: dotnet test
