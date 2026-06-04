@@ -39,6 +39,8 @@ docs/features/{feature-folder}/visual-review-issues.md
 3. Record only visual mismatches in `visual-review-issues.md`.
 4. Critical or High visual issues block Phase 11 frontend testing.
 5. Map `Approved` and `Approved with minor issues` to `Review Status = Approved` in `workflow-status.md`.
+6. List screen viewport check: verify header is always visible (not hidden when empty/loading); verify header and pagination footer are in viewport; verify only the data body scrolls. Flag violations as High severity.
+7. Add/Edit screen viewport check: verify all input fields are visible without vertical overflow; verify multi-column layout is used when appropriate. Flag violations as High severity.
 
 ## Next Step
 

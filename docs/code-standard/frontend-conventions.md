@@ -116,6 +116,32 @@ toast.success('Thêm mới thành công');
 toast.error('Có lỗi xảy ra');
 ```
 
+## UI Layout Constraints
+
+### Màn hình danh sách (List screens)
+
+- **Header luôn render** — không ẩn header khi data rỗng hoặc đang loading.
+- **Header và pagination footer luôn trong viewport** — dùng flex column layout, data body là scrollable flex child.
+- **Data body scroll, header và footer không scroll**.
+
+```tsx
+<div className="flex flex-col h-full">
+  <ListHeader />                          {/* always visible */}
+  <div className="flex-1 overflow-auto">  {/* scrollable body */}
+    <DataGrid ... />
+  </div>
+  <PaginationBar />                       {/* always visible */}
+</div>
+```
+
+### Màn hình thêm mới / chỉnh sửa (Add/Edit screens)
+
+- **Tất cả trường nhập liệu phải hiển thị trong viewport** — không để form overflow dọc.
+- **Dùng multi-column layout** (`grid-cols-2` hoặc `grid-cols-3`) thay vì single-column khi số field nhiều.
+- Điều chỉnh label/input size và spacing để giảm chiều cao tổng thể nếu cần.
+
+---
+
 ## Grid Components
 
 Use `<DataGrid>` from `@/components/grid` — do not import AG Grid directly:

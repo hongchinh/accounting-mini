@@ -37,7 +37,7 @@ Server chạy local, watch thư mục `screen_dir` để tìm file HTML mới nh
 AI viết HTML vào `screen_dir`, user xem trong browser và click chọn options.
 Clicks được ghi vào `state_dir/events` mà AI đọc ở lượt tiếp theo.
 
-**Content fragments vs full documents:**
+**Mảnh nội dung vs tài liệu đầy đủ:**
 - Nếu HTML bắt đầu bằng `<!DOCTYPE` hoặc `<html` → server serve nguyên (chỉ inject helper script).
 - Ngược lại → server tự wrap vào frame template (CSS, indicator bar, polling script).
 - **Mặc định viết content fragments.** Chỉ viết full document khi cần control toàn bộ page.
@@ -194,7 +194,7 @@ Không cần `<html>`, không cần CSS, không cần `<script>`.
 
 ## CSS Classes có sẵn
 
-### Options (A/B/C choices)
+### Tùy chọn (A/B/C)
 
 ```html
 <div class="options">
@@ -208,7 +208,7 @@ Không cần `<html>`, không cần CSS, không cần `<script>`.
 </div>
 ```
 
-**Multi-select** — thêm `data-multiselect` vào container:
+**Chọn nhiều** — thêm `data-multiselect` vào container:
 
 ```html
 <div class="options" data-multiselect>
@@ -216,12 +216,12 @@ Không cần `<html>`, không cần CSS, không cần `<script>`.
 </div>
 ```
 
-### Cards (visual designs)
+### Cards (thiết kế trực quan)
 
 ```html
 <div class="cards">
   <div class="card" data-choice="design1" onclick="toggleSelect(this)">
-    <div class="card-image"><!-- mockup content --></div>
+    <div class="card-image"><!-- nội dung mockup --></div>
     <div class="card-body">
       <h3>Tên design</h3>
       <p>Mô tả</p>
@@ -230,16 +230,16 @@ Không cần `<html>`, không cần CSS, không cần `<script>`.
 </div>
 ```
 
-### Mockup container
+### Container mockup
 
 ```html
 <div class="mockup">
   <div class="mockup-header">Preview: Màn hình Nhà Cung Cấp</div>
-  <div class="mockup-body"><!-- mockup HTML --></div>
+  <div class="mockup-body"><!-- HTML mockup --></div>
 </div>
 ```
 
-### Split view (side-by-side)
+### Xem song song (split view)
 
 ```html
 <div class="split">
@@ -248,7 +248,7 @@ Không cần `<html>`, không cần CSS, không cần `<script>`.
 </div>
 ```
 
-### Pros/Cons
+### Ưu/Nhược điểm
 
 ```html
 <div class="pros-cons">
@@ -257,7 +257,7 @@ Không cần `<html>`, không cần CSS, không cần `<script>`.
 </div>
 ```
 
-### Mock wireframe elements
+### Phần tử wireframe
 
 ```html
 <div class="mock-nav">Logo | Tổng quan | Nhà cung cấp | Báo cáo</div>
@@ -270,7 +270,7 @@ Không cần `<html>`, không cần CSS, không cần `<script>`.
 <div class="placeholder">Khu vực placeholder</div>
 ```
 
-### Typography & Layout
+### Kiểu chữ & Bố cục
 
 | Class/Element | Dùng cho |
 |---|---|
@@ -282,7 +282,7 @@ Không cần `<html>`, không cần CSS, không cần `<script>`.
 
 ---
 
-## Design tips
+## Mẹo thiết kế
 
 - **Scale fidelity theo câu hỏi** — wireframe cho layout questions, polish cho visual questions
 - **Giải thích câu hỏi trên mỗi page** — "Layout nào chuyên nghiệp hơn?" chứ không phải "Chọn một"
@@ -293,7 +293,7 @@ Không cần `<html>`, không cần CSS, không cần `<script>`.
 
 ---
 
-## File naming
+## Đặt tên file
 
 - Dùng tên có nghĩa: `supplier-layout.html`, `color-scheme.html`, `table-vs-card.html`
 - **Không bao giờ reuse filename** — mỗi screen là file mới

@@ -103,6 +103,8 @@ Skill chi tiết: `.claude/skills/per-task-code-review.md`
 12. Run typecheck/lint/build when feasible and record the result.
 13. Follow TDD: write failing test before each implementation unit (see TDD Requirement above).
 14. Run per-task code review (2-stage) after each task group (see Per-Task Code Review above).
+15. List screen: header always rendered (no conditional hide); implement `flex flex-col h-full` layout with `flex-1 overflow-auto` data body and fixed pagination footer. See UI Layout Constraints in `docs/code-standard/frontend-conventions.md`.
+16. Add/Edit screen: all input fields must be visible in viewport; use `grid grid-cols-2` or `grid-cols-3` layout when field count would cause vertical overflow in a single column.
 
 ## Completion Checklist
 
@@ -119,6 +121,8 @@ Skill chi tiết: `.claude/skills/per-task-code-review.md`
 - [ ] TDD cycle followed for every hook, component, page (failing test first).
 - [ ] Per-task 2-stage review passed for every task group (G1–G4).
 - [ ] No Critical or Important issues remain open from code review.
+- [ ] List screen: header always rendered; header and pagination footer in viewport; data body scrolls.
+- [ ] Add/Edit screen: all input fields visible in viewport; multi-column layout used if needed.
 
 ## Final Report Format
 

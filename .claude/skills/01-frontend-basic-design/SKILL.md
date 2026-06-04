@@ -257,12 +257,14 @@ Search boxes, dropdown filters, date range filters, and similar controls.
 
 ### 2.4 Data Grid / Table
 Column list, sortable columns, action columns, row selection, and grid behavior.
+Viewport constraint: header always rendered (data or empty); data body scrolls; pagination footer always in viewport.
 
 ### 2.5 Summary Cards
 Overview metrics if available, such as total count, total amount, or active count.
 
 ### 2.6 Detail / Form Dialog
 Popup or drawer behavior for create, update, and detail view.
+Viewport constraint: all input fields must be visible without vertical overflow; use multi-column layout (grid-cols-2 or grid-cols-3) if field count requires it.
 
 ### 2.7 Pagination
 Strategy: server-side or client-side, page size options, and pagination controls.
@@ -417,6 +419,8 @@ Summary from A6.4: questions that must be confirmed before moving to Phase 2.
 12. The TypeScript model in Section 4 is an expectation and may change after API Contract Review.
 13. Always write Multi-tenant and Permission sections, even for simple features.
 14. Validation rules must include client-side validation. Do not wait for the server to define every validation rule.
+15. List screen: header must always be rendered; header and pagination footer must be visible in viewport; data body scrolls. Document this in Section 2.4.
+16. Add/Edit screen: all input fields must fit in the viewport without overflow; specify multi-column layout (grid-cols-2 or grid-cols-3) in Section 2.6 when needed.
 
 ---
 
